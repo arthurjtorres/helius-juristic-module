@@ -6,6 +6,7 @@ export default interface PenaltyDocInterface {
   penaltyDocRegistration: string;
   penaltyDocNumber: string;
   fkCtdopId: string;
+  fkAppealId: string;
   fkPenaltyInfoId: string;
 
   createdAt: Date;
