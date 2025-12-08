@@ -11,6 +11,7 @@ class PenaltyDocModel extends Model {
   declare penaltyDocRegistration: string;
   declare penaltyDocNumber: string;
   declare fkCtdopId: string;
+  declare fkAppealId: string;
   declare fkPenaltyInfoId: string;
 
   declare createdAt: Date;
@@ -53,6 +54,17 @@ PenaltyDocModel.init({
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   },
+  fkAppealId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: {
+        tableName: 'appeal',
+        schema: 'juristic',
+      },
+      key: 'appeal_id',
+    },
+  },
   fkPenaltyInfoId: {
     type: DataTypes.UUID,
     allowNull: false,
@@ -63,7 +75,7 @@ PenaltyDocModel.init({
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   },
-  
+
   createdAt: {
     allowNull: false,
     type: sequelize.DATE,
