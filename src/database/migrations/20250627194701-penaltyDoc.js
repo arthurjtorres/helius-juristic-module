@@ -41,6 +41,17 @@ module.exports = {
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE',
         },
+        fk_appeal_id: {
+          type: DataTypes.UUID,
+          allowNull: true,
+          references: {
+            model: {
+              tableName: 'appeal',
+              schema: 'juristic',
+            },
+            key: 'appeal_id',
+          },
+        },
         fk_penalty_info_id: {
           type: DataTypes.UUID,
           allowNull: false,
@@ -54,6 +65,7 @@ module.exports = {
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE',
         },
+        
         created_at: {
           allowNull: false,
           type: Sequelize.DATE,
