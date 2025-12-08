@@ -1,0 +1,4 @@
+export enum DocTypeEnum {
+  IRREGULARIDADE = 'NOTIFICAÇÃO DE IRREGULARIDADE',
+  AUTO = 'AUTO DE INFRAÇÃO',
+}
