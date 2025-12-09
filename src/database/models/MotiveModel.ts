@@ -11,6 +11,7 @@ class MotiveModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 MotiveModel.init({
@@ -28,7 +29,7 @@ MotiveModel.init({
     type: sequelize.STRING,
     allowNull: true,
   },
-  
+
   createdAt: {
     allowNull: false,
     type: sequelize.DATE,
@@ -47,6 +48,11 @@ MotiveModel.init({
   updatedBy: {
     allowNull: false,
     type: DataTypes.UUID,
+  },
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
   },
 }, {
   sequelize: db,
