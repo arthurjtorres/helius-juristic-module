@@ -72,7 +72,7 @@ AppealModel.init({
     type: DataTypes.UUID,
   },
   active: {
-    allownull: false,
+    allowNull: false,
     type: sequelize.BOOLEAN,
     defaultValue: true,
   },
