@@ -16,6 +16,7 @@ class AppealModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 AppealModel.init({
@@ -69,6 +70,11 @@ AppealModel.init({
   updatedBy: {
     allowNull: false,
     type: DataTypes.UUID,
+  },
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
   },
 }, {
   sequelize: db,

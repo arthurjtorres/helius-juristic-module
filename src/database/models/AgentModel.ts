@@ -10,6 +10,7 @@ class AgentModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 AgentModel.init({
@@ -23,7 +24,7 @@ AgentModel.init({
     type: sequelize.STRING,
     allowNull: false,
   },
-  
+
   createdAt: {
     allowNull: false,
     type: sequelize.DATE,
@@ -42,6 +43,11 @@ AgentModel.init({
   updatedBy: {
     allowNull: false,
     type: DataTypes.UUID,
+  },
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
   },
 }, {
   sequelize: db,
