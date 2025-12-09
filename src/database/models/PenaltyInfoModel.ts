@@ -27,6 +27,7 @@ class PenaltyInfoModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 PenaltyInfoModel.init({
@@ -39,12 +40,12 @@ PenaltyInfoModel.init({
   fkCompanyId: {
     type: DataTypes.UUID,
     allowNull: false,
-   
+
   },
   fkVehicleId: {
     type: DataTypes.UUID,
     allowNull: false,
-    
+
   },
   fkBusTimetableId: {
     type: DataTypes.UUID,
@@ -81,7 +82,7 @@ PenaltyInfoModel.init({
   fkLocationId: {
     type: DataTypes.UUID,
     allowNull: false,
-   
+
   },
   agentAnnotation: {
     type: sequelize.STRING,
@@ -108,7 +109,7 @@ PenaltyInfoModel.init({
     type: sequelize.STRING,
     allowNull: true,
   },
-  
+
   createdAt: {
     allowNull: false,
     type: sequelize.DATE,
@@ -127,6 +128,11 @@ PenaltyInfoModel.init({
   updatedBy: {
     allowNull: false,
     type: DataTypes.UUID,
+  },
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
   },
 }, {
   sequelize: db,

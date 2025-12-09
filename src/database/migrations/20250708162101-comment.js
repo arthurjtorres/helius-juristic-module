@@ -83,6 +83,11 @@ module.exports = {
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
         },
+        active: {
+          allownull: false,
+          type: Sequelize.BOOLEAN,
+          defaultValue: true,
+        },
     }, {
       schema: 'juristic',
     });
