@@ -13,6 +13,7 @@ class FineCodeModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 FineCodeModel.init({
@@ -38,7 +39,7 @@ FineCodeModel.init({
     type: sequelize.STRING,
     allowNull: false,
   },
-  
+
   createdAt: {
     allowNull: false,
     type: sequelize.DATE,
@@ -58,8 +59,12 @@ FineCodeModel.init({
     allowNull: false,
     type: DataTypes.UUID,
   },
-},
-{
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
+  },
+}, {
   sequelize: db,
   tableName: 'fine_code',
   schema: 'juristic',

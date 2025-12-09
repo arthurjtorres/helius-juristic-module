@@ -12,6 +12,7 @@ class AnalysisModel extends Model {
   declare createdBy: string;
   declare updatedAt: Date;
   declare updatedBy: string;
+  declare active: boolean;
 }
 
 AnalysisModel.init({
@@ -54,6 +55,11 @@ AnalysisModel.init({
   updatedBy: {
     allowNull: false,
     type: DataTypes.UUID,
+  },
+  active: {
+    allownull: false,
+    type: sequelize.BOOLEAN,
+    defaultValue: true,
   },
 }, {
   sequelize: db,
