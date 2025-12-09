@@ -7,6 +7,7 @@ import { Options } from 'sequelize'
     database: process.env.DB_NAME,  // Já compartilhado no .env
     host: process.env.DB_HOST,
     dialect: 'postgres',
+    logging: console.log,
   }
   /*
   ,
