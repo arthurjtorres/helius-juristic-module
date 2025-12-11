@@ -102,7 +102,7 @@ module.exports = {
           onUpdate: "CASCADE",
           onDelete: "CASCADE",
         },
-        active: {
+        activated: {
           allownull: false,
           type: Sequelize.BOOLEAN,
           defaultValue: true,
