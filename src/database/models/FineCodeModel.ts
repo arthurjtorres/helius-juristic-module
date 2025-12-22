@@ -4,6 +4,7 @@ import sequelize from "sequelize";
 
 class FineCodeModel extends Model {
   declare fineCodeId: string;
+  declare fineNumber: string;
   declare fineDescription: string;
   declare fineKm: string;
   declare fineAlias: string;
@@ -21,6 +22,10 @@ FineCodeModel.init({
     type: DataTypes.UUID,
     primaryKey: true,
     defaultValue: DataTypes.UUIDV4,
+    allowNull: false,
+  },
+  fineNumber: {
+    type: sequelize.STRING,
     allowNull: false,
   },
   fineDescription: {
