@@ -11,7 +11,7 @@ const AgentValidation = joi.object({
 
 const FineCodeValidation = joi.object({
   fineDescription: joi.string().required(),
-  fineNumber: joi.string().required(),
+  fineNumber: joi.string().optional(),
   fineKm: joi.string().required(),
   fineAlias: joi.string().optional(),
   fineOrder: joi.string().required(),
