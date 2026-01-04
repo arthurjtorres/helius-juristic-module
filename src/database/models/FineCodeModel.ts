@@ -27,6 +27,7 @@ FineCodeModel.init({
   fineNumber: {
     type: sequelize.STRING,
     allowNull: false,
+    defaultValue: sequelize.literal("nextval('juristic.fine_number_seq')::text"),
   },
   fineDescription: {
     type: sequelize.TEXT,
