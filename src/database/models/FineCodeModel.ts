@@ -39,7 +39,7 @@ FineCodeModel.init({
   },
   fineAlias: {
     type: sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   fineOrder: {
     type: sequelize.STRING,
