@@ -1,22 +1,23 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import 'dotenv/config';
-import Resp from "../../utils/Response";
+import Resp from "../utils/Response";
 
 const secret = process.env.JWT_SECRET as string
 
 interface JwtPayload {
   userId: string;
-  userName: string;
+
+  usertag: string;
   email: string;
   userType: string;
-  fkClearanceId: string;
+  clearance: string;
 }
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    if(!token) {
+    if (!token) {
       return Resp.unauthorized('Token não fornecido');
     }
     const decoded = jwt.verify(token, secret) as JwtPayload;
@@ -27,4 +28,4 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-export {verifyToken};
+export { verifyToken };
