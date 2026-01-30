@@ -1,6 +1,6 @@
 import { Router } from "express";
 import PenaltyDocController from "../controllers/PenaltyDocController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const penaltyDocRouter = Router();
 const controller = new PenaltyDocController();

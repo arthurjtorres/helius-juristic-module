@@ -1,6 +1,6 @@
 import { Router } from "express";
 import AnalysisController from "../controllers/AnalysisController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const analysisRouter = Router();
 const controller = new AnalysisController();
