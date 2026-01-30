@@ -5,13 +5,20 @@ import Resp from "../utils/Response";
 
 const secret = process.env.JWT_SECRET as string
 
+interface MenuPermission {
+  menu: string;
+  permissions: string[];
+}
+
 interface JwtPayload {
   userId: string;
-
+  userName: string;
   usertag: string;
   email: string;
   userType: string;
   clearance: string;
+  moduleName: string;
+  allowedMenus: MenuPermission[];
 }
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {

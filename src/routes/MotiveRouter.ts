@@ -1,6 +1,6 @@
 import { Router } from "express";
 import MotiveController from "../controllers/MotiveController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 const motiveRouter = Router();
 const controller = new MotiveController();
 
