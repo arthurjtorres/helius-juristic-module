@@ -1,6 +1,6 @@
 import { Router } from "express";
 import CTDOPController from "../controllers/CTDOPController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const ctdopRouter = Router();
 const controller = new CTDOPController();

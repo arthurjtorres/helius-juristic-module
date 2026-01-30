@@ -1,6 +1,6 @@
 import { Router } from "express";
 import FineCodeController from "../controllers/FineCodeController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const fineCodeRouter = Router();
 const controller = new FineCodeController();
