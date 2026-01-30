@@ -1,6 +1,6 @@
 import { Router } from "express";
 import AppealController from "../controllers/AppealController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const appealRouter = Router();
 const controller = new AppealController();

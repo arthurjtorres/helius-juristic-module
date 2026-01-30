@@ -1,6 +1,6 @@
 import { Router } from "express";
 import AgentController from "../controllers/AgentController";
-import { verifyToken } from "./middlewares/Authentication";
+import { verifyToken } from "../middlewares/Authentication";
 
 const agentRouter = Router();
 const controller = new AgentController();
