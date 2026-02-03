@@ -1,37 +1,43 @@
-import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import 'dotenv/config';
-import Resp from "../utils/Response";
+import { NextFunction, Request, Response as ExpressResponse } from "express";
+import Response from "../utils/Response";
 
-const secret = process.env.JWT_SECRET as string
+const secret = process.env.JWT_SECRET as string;
 
-interface MenuPermission {
+export interface MenuPermission {
   menu: string;
   permissions: string[];
 }
 
-interface JwtPayload {
+export interface UserModuleRole {
+  module: string;
+  role: string;
+}
+
+export interface JwtPayload {
   userId: string;
   userName: string;
   usertag: string;
   email: string;
   userType: string;
   clearance: string;
-  moduleName: string;
+  modules: string[]; 
+  roles: UserModuleRole[];
   allowedMenus: MenuPermission[];
 }
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyToken = (req: Request, res: ExpressResponse, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
-      return Resp.unauthorized('Token não fornecido');
+      return Response.unauthorized('Token não fornecido');
     }
     const decoded = jwt.verify(token, secret) as JwtPayload;
     res.locals.user = decoded
     next();
   } catch (error) {
-    return Resp.unauthorized('Token inválido');
+    return Response.unauthorized('Token inválido');
   }
 }
 
