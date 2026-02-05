@@ -6,7 +6,13 @@ class AppealController {
 
   async createAppeal(req: Request, res: Response) {
     try {
-      const result = await this.service.createAppeal(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.userId
+      }
+
+      const result = await this.service.createAppeal(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em createAppeal:", error);
@@ -16,8 +22,14 @@ class AppealController {
 
   async updateAppeal(req: Request, res: Response) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateAppeal(id, req.body);
+      const result = await this.service.updateAppeal(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em updateAppeal:", error);

@@ -9,8 +9,9 @@ class FineCodeController {
       const user = res.locals.user;
       const data = {
         ...req.body, 
-        createdBy: user.id
+        createdBy: user.userId
       }
+
       const result = await this.service.createFineCode(data);
       return res.status(result.status).json(result);
     } catch (error) {
@@ -21,8 +22,14 @@ class FineCodeController {
 
   async updateFineCode(req: Request, res: Response, next: NextFunction) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateFineCode(id, req.body);
+      const result = await this.service.updateFineCode(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em update FineCode:", error);

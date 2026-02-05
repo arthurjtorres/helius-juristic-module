@@ -6,7 +6,13 @@ class MotiveController {
 
   async createMotive(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.createMotive(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.userId
+      }
+
+      const result = await this.service.createMotive(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em createMotive:", error);
@@ -16,8 +22,14 @@ class MotiveController {
 
   async updateMotive(req: Request, res: Response, next: NextFunction) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateMotive(id, req.body);
+      const result = await this.service.updateMotive(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em updateMotive:", error);
