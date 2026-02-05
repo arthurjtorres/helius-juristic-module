@@ -6,7 +6,13 @@ class AgentController {
 
   async createAgent(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.createAgent(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.userId
+      }
+
+      const result = await this.service.createAgent(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em createAgent:", error);
@@ -16,8 +22,14 @@ class AgentController {
 
   async updateAgent(req: Request, res: Response, next: NextFunction) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateAgent(id, req.body);
+      const result = await this.service.updateAgent(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em updateAgent:", error);

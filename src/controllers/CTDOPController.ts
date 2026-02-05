@@ -6,7 +6,13 @@ class CTDOPController {
 
   async createCTDOP(req: Request, res: Response) {
     try {
-      const result = await this.service.createCTDOP(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.userId
+      }
+
+      const result = await this.service.createCTDOP(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em createCTDOP:", error);
@@ -16,8 +22,14 @@ class CTDOPController {
 
   async updateCTDOP(req: Request, res: Response) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateCTDOP(id, req.body);
+      const result = await this.service.updateCTDOP(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em updateCTDOP:", error);

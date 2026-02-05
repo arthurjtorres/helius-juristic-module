@@ -48,7 +48,7 @@ class PenaltyInfoService {
     if (!id) return Response.badRequest("ID não informado");
     data.updatedAt = new Date();
 
-    const { error } = UpdateValidationSchema.UpdateValidation.validate(data);
+    const { error } = UpdateValidationSchema.UpdatePenaltyInfoValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
     const [updated] = await this.model.update(data, { where: { penaltyInfoId: id } });
