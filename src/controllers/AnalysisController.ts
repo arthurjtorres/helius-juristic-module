@@ -6,7 +6,13 @@ class AnalysisController {
 
   async createAnalysis(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.createAnalysis(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.userId
+      }
+
+      const result = await this.service.createAnalysis(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em createAnalysis:", error);
@@ -16,8 +22,14 @@ class AnalysisController {
 
   async updateAnalysis(req: Request, res: Response, next: NextFunction) {
     try {
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        updatedBy: user.userId
+      }
+
       const { id } = req.params;
-      const result = await this.service.updateAnalysis(id, req.body);
+      const result = await this.service.updateAnalysis(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em updateAnalysis:", error);

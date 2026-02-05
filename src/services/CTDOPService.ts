@@ -21,7 +21,7 @@ class CTDOPService {
     if(!id) return Response.badRequest("ID não informado");
     data.updatedAt = new Date();
 
-    const { error } = UpdateValidationSchema.UpdateValidation.validate(data);    
+    const { error } = UpdateValidationSchema.UpdateCTDOPValidation.validate(data);    
     if (error) return Response.badRequest(error.message);
 
     const [updated] = await this.model.update(data, {
