@@ -13,7 +13,7 @@ const FineCodeValidation = joi.object({
   fineDescription: joi.string().required(),
   fineNumber: joi.string().optional(),
   fineKm: joi.string().required(),
-  fineAlias: joi.string().optional(),
+  fineAlias: joi.string().allow(null, '').empty('').optional(),
   fineOrder: joi.string().required(),
 
   createdAt: joi.date().required(),
