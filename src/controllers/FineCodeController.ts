@@ -6,7 +6,12 @@ class FineCodeController {
 
   async createFineCode(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.createFineCode(req.body);
+      const user = res.locals.user;
+      const data = {
+        ...req.body, 
+        createdBy: user.id
+      }
+      const result = await this.service.createFineCode(data);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em create FineCode:", error);
