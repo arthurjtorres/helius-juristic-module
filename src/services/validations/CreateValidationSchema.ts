@@ -7,6 +7,7 @@ const AgentValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const FineCodeValidation = joi.object({
@@ -18,6 +19,7 @@ const FineCodeValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const MotiveValidation = joi.object({
@@ -26,6 +28,7 @@ const MotiveValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const CTDOPValidation = joi.object({
@@ -39,6 +42,7 @@ const CTDOPValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const AppealValidation = joi.object({
@@ -51,10 +55,11 @@ const AppealValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const PenaltyInfoValidation = joi.object({
-   fkCompanyId: joi.string().uuid().required(),
+  fkCompanyId: joi.string().uuid().required(),
   fkVehicleId: joi.string().uuid().required(),
   fkBusTimetableId: joi.string().uuid().required(),
   date: joi.date().required(),
@@ -69,6 +74,7 @@ const PenaltyInfoValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const PenaltyDocValidation = joi.object({
@@ -80,6 +86,7 @@ const PenaltyDocValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 const AnalysisValidation = joi.object({
@@ -88,6 +95,7 @@ const AnalysisValidation = joi.object({
 
   createdAt: joi.date().required(),
   createdBy: joi.string().required(),
+  activated: joi.boolean().optional(),
 });
 
 export = {
