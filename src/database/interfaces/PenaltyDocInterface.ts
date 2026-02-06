@@ -13,4 +13,5 @@ export default interface PenaltyDocInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }
