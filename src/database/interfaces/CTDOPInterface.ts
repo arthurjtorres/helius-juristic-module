@@ -14,4 +14,5 @@ export default interface CTDOPInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }

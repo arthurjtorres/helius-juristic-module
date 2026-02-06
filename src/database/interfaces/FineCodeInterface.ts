@@ -10,4 +10,5 @@ export default interface FineCodeInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }

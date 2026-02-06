@@ -7,4 +7,5 @@ export default interface MotiveInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }
