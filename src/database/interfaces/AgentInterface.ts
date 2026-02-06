@@ -6,4 +6,5 @@ export default interface AgentInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }

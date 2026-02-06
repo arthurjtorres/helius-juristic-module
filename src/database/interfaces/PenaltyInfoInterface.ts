@@ -19,4 +19,5 @@ export default interface PenaltyInfoInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }

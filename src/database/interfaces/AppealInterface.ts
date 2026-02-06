@@ -14,4 +14,5 @@ export default interface AppealInterface {
   createdBy: string;
   updatedAt?: Date;
   updatedBy?: string;
+  activated?: boolean;
 }
