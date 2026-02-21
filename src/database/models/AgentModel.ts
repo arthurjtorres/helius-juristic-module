@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
+import PenaltyInfoModel from "./PenaltyInfoModel";
 
 class AgentModel extends Model {
   declare agentId: string;
@@ -55,6 +56,12 @@ AgentModel.init({
   schema: 'juristic',
   timestamps: false,
   underscored: true
+});
+
+AgentModel.hasMany(PenaltyInfoModel, {
+  foreignKey: 'fkAgentId',
+  sourceKey: 'agentId',
+  as: 'PenaltyInfo'
 });
 
 export default AgentModel;

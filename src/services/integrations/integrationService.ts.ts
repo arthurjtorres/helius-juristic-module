@@ -11,6 +11,17 @@ export const getCompanyById = async (id: string) => {
   }
 };
 
+export const getCompaniesByIds = async (ids: string[]) => {
+  if (!ids.length) return [];
+  try {
+    const response = await axiosRegistry.post(registryRoutes.getCompaniesBulk, { ids });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Erro ao procurar empresas em lote:", error);
+    return [];
+  }
+};
+
 export const getVehicleById = async (id: string ) => {
   try {
     const response = await axiosRegistry.get(registryRoutes.getVehicleById(id));
@@ -18,6 +29,17 @@ export const getVehicleById = async (id: string ) => {
   } catch (error: any) {
     console.error(`Erro ao buscar o veículo ${id}`, error.message);
     return null;
+  }
+};
+
+export const getVehiclesByIds = async (ids: string[]) => {
+  if (!ids.length) return [];
+  try {
+    const response = await axiosRegistry.post(registryRoutes.getVehiclesBulk, { ids });
+    return response.data?.data || []; 
+  } catch (error: any) {
+    console.error(`Erro na busca em lote de veículos:`, error.message);
+    return [];
   }
 };
 
@@ -31,6 +53,17 @@ export const getBusTimetableById = async (id: string ) => {
   }
 };
 
+export const getBusTimetablesByIds = async (ids: string[]) => {
+  if (!ids.length) return [];
+  try {
+    const response = await axiosRegistry.post(registryRoutes.getBusTimetablesBulk, { ids });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Erro ao procurar itinerários em lote:", error);
+    return [];
+  }
+};
+
 export const getLocationById = async (id: string ) => {
   try {
     const response = await axiosRegistry.get(registryRoutes.getLocationById(id));
@@ -41,3 +74,13 @@ export const getLocationById = async (id: string ) => {
   }
 };
 
+export const getLocationsByIds = async (ids: string[]) => {
+  if (!ids.length) return [];
+  try {
+    const response = await axiosRegistry.post(registryRoutes.getLocationsBulk, { ids });
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Erro ao procurar locais em lote:", error);
+    return [];
+  }
+};

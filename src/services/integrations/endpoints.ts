@@ -1,4 +1,5 @@
 export const registryRoutes = {
+  // --- Rotas Individuais ---
   getCompanyGroupById: (id: string) => `/company-group/${id}`,
   getCorporationById: (id: string) => `/corporation/${id}`,
   getCompanyById: (id: string) => `/company/${id}`,
@@ -12,5 +13,12 @@ export const registryRoutes = {
   getPersonById: (id: string) => `/person/${id}`,
   getDocumentById: (id: string) => `/document/${id}`,
   getEmployeeById: (id: string) => `/employee/${id}`,  
+
+  // --- Rotas em Lote ---
+  getCompaniesBulk: `/company/bulk`,
+  getVehiclesBulk: `/vehicle/bulk`,
+  getLocationsBulk: `/location/bulk`,
+  getBusTimetablesBulk: `/bus-timetable/bulk`,
+  getEmployeesBulk: `/employee/bulk`,
   
 };

@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
+import PenaltyInfoModel from "./PenaltyInfoModel";
 
 class FineCodeModel extends Model {
   declare fineCodeId: string;
@@ -77,5 +78,12 @@ FineCodeModel.init({
   timestamps: false,
   underscored: true
 });
+
+FineCodeModel.hasMany(PenaltyInfoModel, {
+  foreignKey: 'fkFineCodeId',
+  sourceKey: 'fineCodeId',
+  as: 'PenaltyInfo'
+});
+
 
 export default FineCodeModel;
