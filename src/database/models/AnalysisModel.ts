@@ -72,9 +72,8 @@ AnalysisModel.init({
 export default AnalysisModel;
 
 AnalysisModel.belongsTo(PenaltyInfoModel, {
-  foreignKey: 'fkPenaltyInfoId'
+  foreignKey: 'fkPenaltyInfoId',
+  targetKey: 'penaltyInfoId',
+  as: 'PenaltyInfo'
 });
 
-PenaltyInfoModel.hasMany(AnalysisModel, {
-  foreignKey: 'fkPenaltyInfoId'
-});

@@ -6,7 +6,7 @@ import AgentModel from "./AgentModel";
 import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
-import AppealModel from "./AppealModel";
+import AnalysisModel from "./AnalysisModel";
 
 class PenaltyInfoModel extends Model {
   declare penaltyInfoId: string;
@@ -142,46 +142,34 @@ PenaltyInfoModel.init({
   underscored: true
 });
 
+PenaltyInfoModel.hasOne(PenaltyDocModel, {
+  foreignKey: 'fkPenaltyInfoId',
+  sourceKey: 'penaltyInfoId',
+  as: 'PenaltyDoc'
+});
 
 PenaltyInfoModel.belongsTo(AgentModel, {
   foreignKey: 'fkAgentId',
-  as: 'agent',
-});
-
-AgentModel.hasMany(PenaltyInfoModel, {
-  foreignKey: 'fkAgentId',
-  as: 'agentLink',
+  targetKey: 'agentId',
+  as: 'Agent',
 });
 
 PenaltyInfoModel.belongsTo(FineCodeModel, {
   foreignKey: 'fkFineCodeId',
-  as: 'fineCode'
-});
-
-FineCodeModel.hasMany(PenaltyInfoModel, {
-  foreignKey: 'fkFineCodeId',
-  as: 'fineCodeLink'
+  targetKey: 'fineCodeId',
+  as: 'FineCode'
 });
 
 PenaltyInfoModel.belongsTo(MotiveModel, {
   foreignKey: 'fkMotiveId',
-  as: 'motive',
+  targetKey: 'motiveId',
+  as: 'Motive',
 });
 
-MotiveModel.hasMany(PenaltyInfoModel, {
-  foreignKey: 'fkMotiveId',
-  as: 'motiveLink',
+PenaltyInfoModel.hasMany(AnalysisModel, {
+  foreignKey: 'fkPenaltyInfoId',
+  sourceKey: 'penaltyInfoId',
+  as: 'Analysis'
 });
-
-PenaltyInfoModel.hasMany(PenaltyDocModel, {
-  foreignKey: "fkPenaltyInfoId",
-  as: "penaltyDocs",
-});
-
-PenaltyInfoModel.hasMany(AppealModel, {
-  foreignKey: "fkPenaltyInfoId",
-  as: "appeals",
-});
-
 
 export default PenaltyInfoModel;
