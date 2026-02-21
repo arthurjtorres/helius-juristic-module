@@ -4,6 +4,7 @@ import sequelize from "sequelize";
 import PenaltyInfoModel from "./PenaltyInfoModel";
 import { DocTypeEnum } from "./enums/DocTypeEnum";
 import CTDOPModel from "./CTDOPModel";
+import AppealModel from "./AppealModel";
 
 class PenaltyDocModel extends Model {
   declare penaltyDocId: string;
@@ -11,7 +12,6 @@ class PenaltyDocModel extends Model {
   declare penaltyDocRegistration: string;
   declare penaltyDocNumber: string;
   declare fkCtdopId: string;
-  declare fkAppealId: string;
   declare fkPenaltyInfoId: string;
 
   declare createdAt: Date;
@@ -36,11 +36,12 @@ PenaltyDocModel.init({
       isIn: [[...Object.values(DocTypeEnum)]],
     },
   },
-  // Identificação disponível para o usuário
+  // Identificação disponível para o usuário (Registro da notificação AS321 || parelelo a ID REF NOTIF)
   penaltyDocRegistration: {
     type: sequelize.STRING,
     allowNull: false,
   },
+  // Número da notificação crua 321
   penaltyDocNumber: {
     type: sequelize.STRING,
     allowNull: false,
@@ -55,23 +56,12 @@ PenaltyDocModel.init({
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   },
-  fkAppealId: {
-    type: DataTypes.UUID,
-    allowNull: true,
-    references: {
-      model: {
-        tableName: 'appeal',
-        schema: 'juristic',
-      },
-      key: 'appeal_id',
-    },
-  },
   fkPenaltyInfoId: {
     type: DataTypes.UUID,
     allowNull: false,
     references: {
-      model: 'penalty',
-      key: 'penalty_id',
+      model: 'penalty_info',
+      key: 'penalty_info_id',
     },
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
@@ -110,19 +100,21 @@ PenaltyDocModel.init({
 });
 
 PenaltyDocModel.belongsTo(CTDOPModel, {
-  foreignKey: 'fkCtdopId'
+  foreignKey: 'fkCtdopId',
+  targetKey: 'ctdopId',
+  as: 'CTDOP'
 });
 
-CTDOPModel.hasMany(PenaltyDocModel, {
-  foreignKey: 'fkCtdopId'
-});
-
-/*PenaltyDocModel.belongsTo(PenaltyInfoModel, {
+PenaltyDocModel.belongsTo(PenaltyInfoModel, {
   foreignKey: 'fkPenaltyInfoId',
+  targetKey: 'penaltyInfoId',
+  as: 'PenaltyInfo'
 });
 
-PenaltyInfoModel.hasMany(PenaltyDocModel, {
-  foreignKey: 'fkPenaltyInfoId',
-});*/
+PenaltyDocModel.hasOne(AppealModel, {
+  foreignKey: 'fkPenaltyDocId',
+  sourceKey: 'penaltyDocId',
+  as: 'Appeal'
+});
 
 export default PenaltyDocModel;
