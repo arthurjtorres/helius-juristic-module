@@ -2,6 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
 import { DocTypeEnum } from "./enums/DocTypeEnum";
+import PenaltyDocModel from "./PenaltyDocModel";
 
 class AppealModel extends Model {
   declare appealId: string;
@@ -11,6 +12,7 @@ class AppealModel extends Model {
   declare response?: string;
   declare responseDate?: string;
   declare responseCtdop?: string;
+  declare fkPenaltyDocId: string;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -51,6 +53,14 @@ AppealModel.init({
   responseCtdop: {
     type: sequelize.STRING
   },
+  fkPenaltyDocId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'penalty_doc',
+      key: 'penalty_doc_id'
+    }
+  },
 
   createdAt: {
     allowNull: false,
@@ -82,6 +92,12 @@ AppealModel.init({
   schema: "juristic",
   timestamps: false,
   underscored: true
+});
+
+AppealModel.belongsTo(PenaltyDocModel, {
+  foreignKey: 'fkPenaltyDocId',
+  targetKey: 'penaltyDocId',
+  as: 'PenaltyDoc'
 });
 
 export default AppealModel;

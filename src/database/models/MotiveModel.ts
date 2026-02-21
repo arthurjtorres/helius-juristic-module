@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
+import PenaltyInfoModel from "./PenaltyInfoModel";
 
 class MotiveModel extends Model {
   declare motiveId: string;
@@ -60,6 +61,12 @@ MotiveModel.init({
   schema: 'juristic',
   timestamps: false,
   underscored: true
+});
+
+MotiveModel.hasMany(PenaltyInfoModel, {
+  foreignKey: 'fkMotiveId',
+  sourceKey: 'motiveId',
+  as: 'PenaltyInfo'
 });
 
 export default MotiveModel;
