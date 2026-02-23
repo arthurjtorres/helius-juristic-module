@@ -23,38 +23,6 @@ class PenaltyInfoModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
-
-  static associate(models: any) {
-    this.hasOne(models.PenaltyDocModel, {
-      foreignKey: 'fkPenaltyInfoId',
-      sourceKey: 'penaltyInfoId',
-      as: 'PenaltyDoc'
-    });
-
-    this.belongsTo(models.AgentModel, {
-      foreignKey: 'fkAgentId',
-      targetKey: 'agentId',
-      as: 'Agent',
-    });
-
-    this.belongsTo(models.FineCodeModel, {
-      foreignKey: 'fkFineCodeId',
-      targetKey: 'fineCodeId',
-      as: 'FineCode'
-    });
-
-    this.belongsTo(models.MotiveModel, {
-      foreignKey: 'fkMotiveId',
-      targetKey: 'motiveId',
-      as: 'Motive',
-    });
-
-    this.hasMany(models.AnalysisModel, {
-      foreignKey: 'fkPenaltyInfoId',
-      sourceKey: 'penaltyInfoId',
-      as: 'Analysis'
-    });
-  }
 }
 
 PenaltyInfoModel.init({
