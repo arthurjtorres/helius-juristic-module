@@ -2,11 +2,6 @@ import { DataTypes, Model } from "sequelize";
 import db from ".";
 import { PenaltyStatusEnum } from "./enums/PenaltyStatusEnum";
 import sequelize from "sequelize";
-import AgentModel from "./AgentModel";
-import FineCodeModel from "./FineCodeModel";
-import MotiveModel from "./MotiveModel";
-import PenaltyDocModel from "./PenaltyDocModel";
-import AnalysisModel from "./AnalysisModel";
 
 class PenaltyInfoModel extends Model {
   declare penaltyInfoId: string;

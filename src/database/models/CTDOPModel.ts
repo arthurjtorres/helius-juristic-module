@@ -2,7 +2,6 @@ import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
 import { DocTypeEnum } from "./enums/DocTypeEnum";
-import PenaltyDocModel from "./PenaltyDocModel";
 
 class CTDOPModel extends Model {
   declare ctdopId: string;
