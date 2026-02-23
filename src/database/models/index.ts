@@ -1,5 +1,8 @@
 import { Sequelize } from "sequelize";
 import * as Config from '../config/DatabaseConfig';
+
+export default new Sequelize(Config);
+
 import AgentModel from "./AgentModel";
 import PenaltyInfoModel from "./PenaltyInfoModel";
 import AnalysisModel from "./AnalysisModel";
@@ -8,9 +11,6 @@ import CTDOPModel from "./CTDOPModel";
 import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
-
-
-export default new Sequelize(Config);
 
 const models = {
   AgentModel,
