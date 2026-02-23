@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import db from ".";
+import db from "./database";
 import sequelize from "sequelize";
 import { DocTypeEnum } from "./enums/DocTypeEnum";
 
