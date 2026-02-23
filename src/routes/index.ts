@@ -6,7 +6,7 @@ import appealRouter from "./AppealRouter";
 import ctdopRouter from "./CtdopRouter";
 import penaltyInfoRouter from "./PenaltyInfoRouter";
 import penaltyDocRouter from "./PenaltyDocRouter";
-import penaltyViewRouter from "./penaltyViewRouter";
+import penaltyViewRouter from "./PenaltyViewRouter";
 
 const router = Router();
 
