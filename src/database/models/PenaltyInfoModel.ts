@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import db from ".";
+import db from "./database";
 import { PenaltyStatusEnum } from "./enums/PenaltyStatusEnum";
 import sequelize from "sequelize";
 
