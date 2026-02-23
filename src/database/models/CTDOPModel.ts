@@ -21,7 +21,7 @@ class CTDOPModel extends Model {
   declare activated: boolean;
 
   static associate(models: any) {
-    this.hasMany(PenaltyDocModel, {
+    this.hasMany(models.PenaltyDocModel, {
       foreignKey: 'fkCtdopId',
       sourceKey: 'ctdopId',
       as: 'PenaltyDoc'
