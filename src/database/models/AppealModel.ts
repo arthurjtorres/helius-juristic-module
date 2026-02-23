@@ -21,7 +21,7 @@ class AppealModel extends Model {
   declare activated: boolean;
 
   static associate(models: any) {
-    this.belongsTo(PenaltyDocModel, {
+    this.belongsTo(models.PenaltyDocModel, {
       foreignKey: 'fkPenaltyDocId',
       targetKey: 'penaltyDocId',
       as: 'PenaltyDoc'

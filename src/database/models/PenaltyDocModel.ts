@@ -27,13 +27,13 @@ class PenaltyDocModel extends Model {
       as: 'Appeal'
     });
 
-    this.belongsTo(PenaltyInfoModel, {
+    this.belongsTo(models.PenaltyInfoModel, {
       foreignKey: 'fkPenaltyInfoId',
       targetKey: 'penaltyInfoId',
       as: 'PenaltyInfo'
     });
 
-    this.belongsTo(CTDOPModel, {
+    this.belongsTo(models.CTDOPModel, {
       foreignKey: 'fkCtdopId',
       targetKey: 'ctdopId',
       as: 'CTDOP'
