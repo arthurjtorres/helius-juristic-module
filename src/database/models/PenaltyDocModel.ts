@@ -19,6 +19,26 @@ class PenaltyDocModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.hasOne(models.AppealModel, {
+      foreignKey: 'fkPenaltyDocId',
+      sourceKey: 'penaltyDocId',
+      as: 'Appeal'
+    });
+
+    this.belongsTo(PenaltyInfoModel, {
+      foreignKey: 'fkPenaltyInfoId',
+      targetKey: 'penaltyInfoId',
+      as: 'PenaltyInfo'
+    });
+
+    this.belongsTo(CTDOPModel, {
+      foreignKey: 'fkCtdopId',
+      targetKey: 'ctdopId',
+      as: 'CTDOP'
+    });
+  }
 }
 
 PenaltyDocModel.init({
@@ -97,24 +117,6 @@ PenaltyDocModel.init({
   schema: 'juristic',
   timestamps: false,
   underscored: true
-});
-
-PenaltyDocModel.belongsTo(CTDOPModel, {
-  foreignKey: 'fkCtdopId',
-  targetKey: 'ctdopId',
-  as: 'CTDOP'
-});
-
-PenaltyDocModel.belongsTo(PenaltyInfoModel, {
-  foreignKey: 'fkPenaltyInfoId',
-  targetKey: 'penaltyInfoId',
-  as: 'PenaltyInfo'
-});
-
-PenaltyDocModel.hasOne(AppealModel, {
-  foreignKey: 'fkPenaltyDocId',
-  sourceKey: 'penaltyDocId',
-  as: 'Appeal'
 });
 
 export default PenaltyDocModel;

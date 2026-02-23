@@ -13,6 +13,14 @@ class MotiveModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.hasMany(models.PenaltyInfoModel, {
+      foreignKey: 'fkMotiveId',
+      sourceKey: 'motiveId',
+      as: 'PenaltyInfo'
+    });
+  }
 }
 
 MotiveModel.init({
@@ -61,12 +69,6 @@ MotiveModel.init({
   schema: 'juristic',
   timestamps: false,
   underscored: true
-});
-
-MotiveModel.hasMany(PenaltyInfoModel, {
-  foreignKey: 'fkMotiveId',
-  sourceKey: 'motiveId',
-  as: 'PenaltyInfo'
 });
 
 export default MotiveModel;
