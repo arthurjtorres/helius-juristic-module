@@ -16,6 +16,14 @@ class FineCodeModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.hasMany(models.PenaltyInfoModel, {
+      foreignKey: 'fkFineCodeId',
+      sourceKey: 'fineCodeId',
+      as: 'PenaltyInfo'
+    });
+  }
 }
 
 FineCodeModel.init({
@@ -78,12 +86,5 @@ FineCodeModel.init({
   timestamps: false,
   underscored: true
 });
-
-FineCodeModel.hasMany(PenaltyInfoModel, {
-  foreignKey: 'fkFineCodeId',
-  sourceKey: 'fineCodeId',
-  as: 'PenaltyInfo'
-});
-
 
 export default FineCodeModel;
