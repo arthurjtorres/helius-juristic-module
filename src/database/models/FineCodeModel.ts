@@ -1,7 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from ".";
 import sequelize from "sequelize";
-import PenaltyInfoModel from "./PenaltyInfoModel";
 
 class FineCodeModel extends Model {
   declare fineCodeId: string;
