@@ -9,7 +9,8 @@ import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
 
-const db = new Sequelize(Config);
+
+export default new Sequelize(Config);
 
 const models = {
   AgentModel,
@@ -29,7 +30,6 @@ Object.values(models).forEach((model: any) => {
 });
 
 export {
-  db as default,
   AgentModel,
   AnalysisModel,
   AppealModel,
