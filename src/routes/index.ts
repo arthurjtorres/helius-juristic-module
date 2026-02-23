@@ -6,6 +6,7 @@ import appealRouter from "./AppealRouter";
 import ctdopRouter from "./CtdopRouter";
 import penaltyInfoRouter from "./PenaltyInfoRouter";
 import penaltyDocRouter from "./PenaltyDocRouter";
+import penaltyViewRouter from "./penaltyViewRouter";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/appeal", appealRouter);
 router.use("/ctdop", ctdopRouter);
 router.use("/penalty-info", penaltyInfoRouter);
 router.use("/penalty-doc", penaltyDocRouter);
+router.use("/penalty", penaltyViewRouter);
 
 export default router;
