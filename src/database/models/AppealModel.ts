@@ -19,6 +19,14 @@ class AppealModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.belongsTo(PenaltyDocModel, {
+      foreignKey: 'fkPenaltyDocId',
+      targetKey: 'penaltyDocId',
+      as: 'PenaltyDoc'
+    });
+  }
 }
 
 AppealModel.init({
@@ -92,12 +100,6 @@ AppealModel.init({
   schema: "juristic",
   timestamps: false,
   underscored: true
-});
-
-AppealModel.belongsTo(PenaltyDocModel, {
-  foreignKey: 'fkPenaltyDocId',
-  targetKey: 'penaltyDocId',
-  as: 'PenaltyDoc'
 });
 
 export default AppealModel;

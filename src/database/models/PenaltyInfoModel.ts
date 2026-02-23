@@ -28,6 +28,38 @@ class PenaltyInfoModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.hasOne(PenaltyDocModel, {
+      foreignKey: 'fkPenaltyInfoId',
+      sourceKey: 'penaltyInfoId',
+      as: 'PenaltyDoc'
+    });
+
+    this.belongsTo(AgentModel, {
+      foreignKey: 'fkAgentId',
+      targetKey: 'agentId',
+      as: 'Agent',
+    });
+
+    this.belongsTo(FineCodeModel, {
+      foreignKey: 'fkFineCodeId',
+      targetKey: 'fineCodeId',
+      as: 'FineCode'
+    });
+
+    this.belongsTo(MotiveModel, {
+      foreignKey: 'fkMotiveId',
+      targetKey: 'motiveId',
+      as: 'Motive',
+    });
+
+    this.hasMany(AnalysisModel, {
+      foreignKey: 'fkPenaltyInfoId',
+      sourceKey: 'penaltyInfoId',
+      as: 'Analysis'
+    });
+  }
 }
 
 PenaltyInfoModel.init({
@@ -140,36 +172,6 @@ PenaltyInfoModel.init({
   schema: 'juristic',
   timestamps: false,
   underscored: true
-});
-
-PenaltyInfoModel.hasOne(PenaltyDocModel, {
-  foreignKey: 'fkPenaltyInfoId',
-  sourceKey: 'penaltyInfoId',
-  as: 'PenaltyDoc'
-});
-
-PenaltyInfoModel.belongsTo(AgentModel, {
-  foreignKey: 'fkAgentId',
-  targetKey: 'agentId',
-  as: 'Agent',
-});
-
-PenaltyInfoModel.belongsTo(FineCodeModel, {
-  foreignKey: 'fkFineCodeId',
-  targetKey: 'fineCodeId',
-  as: 'FineCode'
-});
-
-PenaltyInfoModel.belongsTo(MotiveModel, {
-  foreignKey: 'fkMotiveId',
-  targetKey: 'motiveId',
-  as: 'Motive',
-});
-
-PenaltyInfoModel.hasMany(AnalysisModel, {
-  foreignKey: 'fkPenaltyInfoId',
-  sourceKey: 'penaltyInfoId',
-  as: 'Analysis'
 });
 
 export default PenaltyInfoModel;

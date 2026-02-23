@@ -13,6 +13,14 @@ class AnalysisModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.belongsTo(models.PenaltyInfoModel, {
+      foreignKey: 'fkPenaltyInfoId',
+      targetKey: 'penaltyInfoId',
+      as: 'PenaltyInfo'
+    });
+  }
 }
 
 AnalysisModel.init({
@@ -70,10 +78,3 @@ AnalysisModel.init({
 });
 
 export default AnalysisModel;
-
-AnalysisModel.belongsTo(PenaltyInfoModel, {
-  foreignKey: 'fkPenaltyInfoId',
-  targetKey: 'penaltyInfoId',
-  as: 'PenaltyInfo'
-});
-
