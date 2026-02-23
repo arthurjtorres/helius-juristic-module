@@ -12,7 +12,7 @@ import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
 
-const models = {
+const models: any = {
   AgentModel,
   AnalysisModel,
   AppealModel,
@@ -23,9 +23,13 @@ const models = {
   PenaltyInfoModel,  
 };
 
-Object.values(models).forEach((model: any) => {
-  if (model.associate) {
-    model.associate(models);
+Object.keys(models).forEach((modelName) => {
+  // Verifica se o modelo foi importado corretamente e se tem o método associate
+  if (models[modelName] && typeof models[modelName].associate === 'function') {
+    models[modelName].associate(models);
+  } else if (!models[modelName]) {
+     // Isso aqui vai te ajudar no debug se algum modelo ainda estiver vindo undefined
+     console.error(`Cuidado: O modelo ${modelName} está undefined no index.ts!`);
   }
 });
 
