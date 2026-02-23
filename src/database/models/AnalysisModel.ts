@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import db from ".";
-import PenaltyInfoModel from "./PenaltyInfoModel";
 import sequelize from "sequelize";
 
 class AnalysisModel extends Model {
