@@ -19,6 +19,14 @@ class CTDOPModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
+
+  static associate(models: any) {
+    this.hasMany(PenaltyDocModel, {
+      foreignKey: 'fkCtdopId',
+      sourceKey: 'ctdopId',
+      as: 'PenaltyDoc'
+    });
+  }
 }
 
 CTDOPModel.init({
@@ -89,12 +97,6 @@ CTDOPModel.init({
   schema: "juristic",
   timestamps: false,
   underscored: true
-});
-
-CTDOPModel.hasMany(PenaltyDocModel, {
-  foreignKey: 'fkCtdopId',
-  sourceKey: 'ctdopId',
-  as: 'PenaltyDoc'
 });
 
 export default CTDOPModel;
