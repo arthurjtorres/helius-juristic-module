@@ -30,31 +30,31 @@ class PenaltyInfoModel extends Model {
   declare activated: boolean;
 
   static associate(models: any) {
-    this.hasOne(PenaltyDocModel, {
+    this.hasOne(models.PenaltyDocModel, {
       foreignKey: 'fkPenaltyInfoId',
       sourceKey: 'penaltyInfoId',
       as: 'PenaltyDoc'
     });
 
-    this.belongsTo(AgentModel, {
+    this.belongsTo(models.AgentModel, {
       foreignKey: 'fkAgentId',
       targetKey: 'agentId',
       as: 'Agent',
     });
 
-    this.belongsTo(FineCodeModel, {
+    this.belongsTo(models.FineCodeModel, {
       foreignKey: 'fkFineCodeId',
       targetKey: 'fineCodeId',
       as: 'FineCode'
     });
 
-    this.belongsTo(MotiveModel, {
+    this.belongsTo(models.MotiveModel, {
       foreignKey: 'fkMotiveId',
       targetKey: 'motiveId',
       as: 'Motive',
     });
 
-    this.hasMany(AnalysisModel, {
+    this.hasMany(models.AnalysisModel, {
       foreignKey: 'fkPenaltyInfoId',
       sourceKey: 'penaltyInfoId',
       as: 'Analysis'
