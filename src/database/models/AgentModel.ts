@@ -11,14 +11,6 @@ class AgentModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
-
-  static associate(models: any) {
-  this.hasMany(models.PenaltyInfoModel, {
-    foreignKey: 'fkAgentId',
-  sourceKey: 'agentId',
-  as: 'PenaltyInfo'
-  });
-}
 }
 
 AgentModel.init({
