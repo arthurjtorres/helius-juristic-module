@@ -18,14 +18,6 @@ class AppealModel extends Model {
   declare updatedAt: Date;
   declare updatedBy: string;
   declare activated: boolean;
-
-  static associate(models: any) {
-    this.belongsTo(models.PenaltyDocModel, {
-      foreignKey: 'fkPenaltyDocId',
-      targetKey: 'penaltyDocId',
-      as: 'PenaltyDoc'
-    });
-  }
 }
 
 AppealModel.init({
