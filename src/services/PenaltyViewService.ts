@@ -1,8 +1,5 @@
 import PenaltyCompositeView from "../database/DTO/PenaltyCompositeView";
-import AppealModel from "../database/models/AppealModel";
-import CTDOPModel from "../database/models/CTDOPModel";
-import PenaltyDocModel from "../database/models/PenaltyDocModel";
-import PenaltyInfoModel from "../database/models/PenaltyInfoModel";
+import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel } from "../database/models";
 import Response, { StandardResponse } from "../utils/Response";
 
 import {
