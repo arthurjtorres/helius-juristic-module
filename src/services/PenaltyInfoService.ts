@@ -111,8 +111,10 @@ class PenaltyInfoService {
     const results = await this.model.findAll({
       where,
       include: [
-        { model: PenaltyDocModel, as: "penaltyDocs" },
-        { model: AppealModel, as: "appeals" },
+        { model: PenaltyDocModel, as: "PenaltyDoc" , include: [
+          { model: AppealModel, as: "Appeal"}
+        ]},
+        
       ],
     });
 
