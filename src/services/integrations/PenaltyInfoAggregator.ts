@@ -1,4 +1,4 @@
-import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrationService.ts";
+import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrationService";
 import PenaltyInfoModel from "../../database/models/PenaltyInfoModel";
 
 export const buildPenaltyInfoView = async (penalty: PenaltyInfoModel) => {
