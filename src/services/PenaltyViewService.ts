@@ -7,7 +7,7 @@ import {
   getVehiclesByIds,
   getBusTimetablesByIds,
   getLocationsByIds
-} from "./integrations/integrationService.ts";
+} from "./integrations/integrationService";
 
 export class PenaltyViewService {
 
