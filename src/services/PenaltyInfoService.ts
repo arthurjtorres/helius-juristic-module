@@ -6,7 +6,7 @@ import AppealModel from "../database/models/AppealModel";
 import PenaltyInfoInterface from "../database/interfaces/PenaltyInfoInterface";
 import { DocTypeEnum } from "../database/models/enums/DocTypeEnum";
 import { buildPenaltyInfoView } from "./integrations/PenaltyInfoAggregator";
-import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrations/integrationService.ts";
+import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrations/integrationService";
 import Response from "../utils/Response";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
