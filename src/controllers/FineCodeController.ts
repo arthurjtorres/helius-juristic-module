@@ -40,11 +40,22 @@ class FineCodeController {
   async deleteFineCode(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const result = await this.service.deleteFineCode(id);
+      const result = await this.service.deleteFineCode(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em delete FineCode:", error);
       return res.status(500).json("Erro interno ao deletar código de infração.");
+    }
+  }
+
+  async reactivateFineCode(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivateFineCode(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivateFineCode:", error);
+      return res.status(500).json("Erro interno ao reativar código de infração.");
     }
   }
 

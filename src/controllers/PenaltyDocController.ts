@@ -40,11 +40,22 @@ class PenaltyDocController {
   async deletePenaltyDoc(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const result = await this.service.deletePenaltyDoc(id);
+      const result = await this.service.deletePenaltyDoc(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em deletePenaltyDoc:", error);
       return res.status(500).json("Erro interno ao deletar documento de penalidade.");
+    }
+  }
+
+  async reactivatePenaltyDoc(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivatePenaltyDoc(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivatePenaltyDoc:", error);
+      return res.status(500).json("Erro interno ao reativar documento de penalidade.");
     }
   }
 
