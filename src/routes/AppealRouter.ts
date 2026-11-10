@@ -8,7 +8,7 @@ const controller = new AppealController();
 appealRouter.post("/", verifyToken, controller.createAppeal.bind(controller));
 appealRouter.put("/:id", verifyToken, controller.updateAppeal.bind(controller));
 appealRouter.delete("/:id", verifyToken, controller.deleteAppeal.bind(controller));
-appealRouter.get("/:id", controller.getAppeal.bind(controller));
-appealRouter.get("/", controller.findAppeals.bind(controller));
+appealRouter.get("/:id", verifyToken, controller.getAppeal.bind(controller));
+appealRouter.get("/", verifyToken, controller.findAppeals.bind(controller));
 
 export default appealRouter;

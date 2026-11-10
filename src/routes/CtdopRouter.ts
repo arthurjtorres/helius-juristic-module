@@ -8,7 +8,7 @@ const controller = new CTDOPController();
 ctdopRouter.post("/", verifyToken, controller.createCTDOP.bind(controller));
 ctdopRouter.put("/:id", verifyToken, controller.updateCTDOP.bind(controller));
 ctdopRouter.delete("/:id", verifyToken, controller.deleteCTDOP.bind(controller));
-ctdopRouter.get("/:id", controller.getCTDOP.bind(controller));
-ctdopRouter.get("/", controller.findCTDOPs.bind(controller));
+ctdopRouter.get("/:id", verifyToken, controller.getCTDOP.bind(controller));
+ctdopRouter.get("/", verifyToken, controller.findCTDOPs.bind(controller));
 
 export default ctdopRouter;
