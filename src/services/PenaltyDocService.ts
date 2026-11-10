@@ -2,6 +2,7 @@ import { ModelStatic } from "sequelize";
 import PenaltyDocModel from "../database/models/PenaltyDocModel";
 import PenaltyDocInterface from "../database/interfaces/PenaltyDocInterface";
 import Response from "../utils/Response";
+import { AppealModel, CTDOPModel, PenaltyInfoModel } from "../database/models";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 
@@ -24,22 +25,63 @@ class PenaltyDocService {
     const { error } = UpdateValidationSchema.UpdatePenaltyDocValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    const [updated] = await this.model.update(data, { where: { penaltyDocId: id } });
+    const [updated] = await this.model.update(data, { where: { penaltyDocId: id, activated: true } });
     if (!updated) return Response.notFound("Documento de penalidade não encontrado!");
 
-    const result = await this.model.findByPk(id);
+    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true } });
     return Response.ok("Documento de penalidade atualizado com sucesso!", result);
   }
 
-  async deletePenaltyDoc(id: string) {
-    const deleted = await this.model.destroy({ where: { penaltyDocId: id } });
-    if (!deleted) return Response.notFound("Documento de penalidade não encontrado!");
+  /**
+   * Desativa o registro (exclusão lógica): `activated = false`.
+   * Bloqueia (409) se houver dependentes ativos.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async deletePenaltyDoc(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
 
-    return Response.ok("Documento de penalidade deletado com sucesso!");
+    if (await AppealModel.count({ where: { fkPenaltyDocId: id, activated: true } }) > 0) {
+      return Response.conflict("Não é possível desativar: o documento possui recursos ativos.");
+    }
+
+    const [updated] = await this.model.update(
+      { activated: false, updatedBy, updatedAt: new Date() },
+      { where: { penaltyDocId: id, activated: true } }
+    );
+    if (!updated) return Response.notFound("Documento de penalidade não encontrado!");
+
+    return Response.ok("Documento de penalidade desativado com sucesso!");
+  }
+
+  /**
+   * Reativa um registro desativado (`activated = true`).
+   * Responde 409 se um registro pai estiver inativo.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async reactivatePenaltyDoc(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
+
+    const record = await this.model.findOne({ where: { penaltyDocId: id, activated: false } });
+    if (!record) return Response.notFound("Documento de penalidade não encontrado ou já ativo!");
+
+    if (!(await PenaltyInfoModel.count({ where: { penaltyInfoId: record.fkPenaltyInfoId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: a penalidade está inativa.");
+    }
+    if (!(await CTDOPModel.count({ where: { ctdopId: record.fkCtdopId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: o CTDOP está inativo.");
+    }
+
+    await record.update({ activated: true, updatedBy, updatedAt: new Date() });
+
+    return Response.ok("Documento de penalidade reativado com sucesso!");
   }
 
   async getPenaltyDoc(id: string) {
-    const result = await this.model.findByPk(id);
+    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true } });
     if (!result) return Response.notFound("Documento de penalidade não encontrado!");
 
     return Response.ok("Documento de penalidade encontrado!", result);
@@ -51,7 +93,7 @@ class PenaltyDocService {
     fkCtdopId?: string;
     fkPenaltyInfoId?: string;
   }) {
-    const where: any = {};
+    const where: any = { activated: true };
 
     if (query.penaltyDocType) where.penaltyDocType = query.penaltyDocType;
     if (query.penaltyDocNumber) where.penaltyDocNumber = query.penaltyDocNumber;

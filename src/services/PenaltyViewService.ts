@@ -14,14 +14,15 @@ export class PenaltyViewService {
   async getCompositeTableData(): Promise<StandardResponse<PenaltyCompositeView[]>> {
 
     const rawDocs = await PenaltyDocModel.findAll({
+      where: { activated: true },
       include: [
-        { model: PenaltyInfoModel, as: 'PenaltyInfo', include: [
-          { model: AgentModel, as: 'Agent' },
-          { model: FineCodeModel, as: 'FineCode' },
-          { model: MotiveModel, as: 'Motive' }
+        { model: PenaltyInfoModel, as: 'PenaltyInfo', where: { activated: true }, required: true, include: [
+          { model: AgentModel, as: 'Agent', where: { activated: true }, required: false },
+          { model: FineCodeModel, as: 'FineCode', where: { activated: true }, required: false },
+          { model: MotiveModel, as: 'Motive', where: { activated: true }, required: false }
         ]},
-        { model: CTDOPModel, as: 'CTDOP' },
-        { model: AppealModel, as: 'Appeal', required: false } // LEFT JOIN
+        { model: CTDOPModel, as: 'CTDOP', where: { activated: true }, required: false },
+        { model: AppealModel, as: 'Appeal', where: { activated: true }, required: false } // LEFT JOIN
       ],
       // Adicione limitações (limit/offset) aqui futuramente para paginação
     });

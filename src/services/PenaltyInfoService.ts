@@ -7,6 +7,7 @@ import PenaltyInfoInterface from "../database/interfaces/PenaltyInfoInterface";
 import { DocTypeEnum } from "../database/models/enums/DocTypeEnum";
 import { buildPenaltyInfoView } from "./integrations/PenaltyInfoAggregator";
 import Response from "../utils/Response";
+import { AgentModel, AnalysisModel, FineCodeModel, MotiveModel } from "../database/models";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 
@@ -50,13 +51,14 @@ class PenaltyInfoService {
     const { error } = UpdateValidationSchema.UpdatePenaltyInfoValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    const [updated] = await this.model.update(data, { where: { penaltyInfoId: id } });
+    const [updated] = await this.model.update(data, { where: { penaltyInfoId: id, activated: true } });
     if (!updated) return Response.notFound("Penalidade não encontrada!");
 
-    const result = await this.model.findByPk(id, {
+    const result = await this.model.findOne({
+      where: { penaltyInfoId: id, activated: true },
       include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
-          { model: AppealModel, as: "Appeal" }
+        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
+          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
         ]},
       ]
     });
@@ -64,18 +66,67 @@ class PenaltyInfoService {
     return Response.ok("Penalidade atualizada com sucesso!", result);
   }
 
-  async deletePenalty(id: string) {
-    const deleted = await this.model.destroy({ where: { penaltyInfoId: id } });
-    if (!deleted) return Response.notFound("Penalidade não encontrada!");
+  /**
+   * Desativa o registro (exclusão lógica): `activated = false`.
+   * Bloqueia (409) se houver dependentes ativos.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async deletePenalty(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
 
-    return Response.ok("Penalidade deletada com sucesso!");
+    if (await PenaltyDocModel.count({ where: { fkPenaltyInfoId: id, activated: true } }) > 0) {
+      return Response.conflict("Não é possível desativar: a penalidade possui documentos ativos.");
+    }
+
+    if (await AnalysisModel.count({ where: { fkPenaltyInfoId: id, activated: true } }) > 0) {
+      return Response.conflict("Não é possível desativar: a penalidade possui análises ativas.");
+    }
+
+    const [updated] = await this.model.update(
+      { activated: false, updatedBy, updatedAt: new Date() },
+      { where: { penaltyInfoId: id, activated: true } }
+    );
+    if (!updated) return Response.notFound("Penalidade não encontrada!");
+
+    return Response.ok("Penalidade desativada com sucesso!");
+  }
+
+  /**
+   * Reativa um registro desativado (`activated = true`).
+   * Responde 409 se um registro pai estiver inativo.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async reactivatePenalty(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
+
+    const record = await this.model.findOne({ where: { penaltyInfoId: id, activated: false } });
+    if (!record) return Response.notFound("Penalidade não encontrada ou já ativa!");
+
+    if (!(await AgentModel.count({ where: { agentId: record.fkAgentId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: o agente está inativo.");
+    }
+    if (!(await FineCodeModel.count({ where: { fineCodeId: record.fkFineCodeId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: o código de infração está inativo.");
+    }
+    if (!(await MotiveModel.count({ where: { motiveId: record.fkMotiveId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: o motivo está inativo.");
+    }
+
+    await record.update({ activated: true, updatedBy, updatedAt: new Date() });
+
+    return Response.ok("Penalidade reativada com sucesso!");
   }
 
   async getPenalty(id: string) {
-    const penalty = await this.model.findByPk(id, {
+    const penalty = await this.model.findOne({
+      where: { penaltyInfoId: id, activated: true },
       include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
-          { model: AppealModel, as: "Appeal" }
+        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
+          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
         ]},
       ],
     });
@@ -103,7 +154,7 @@ class PenaltyInfoService {
     date?: string;
     penaltyInfoStatus?: string;
   }) {
-    const where: Partial<Record<keyof typeof query, string>> = {};
+    const where: Record<string, string | boolean> = { activated: true };
 
     const filterKeys = [
       'fkCompanyId', 'fkVehicleId', 'fkBusTimetableId', 'fkLocationId',
@@ -116,8 +167,8 @@ class PenaltyInfoService {
     const results = await this.model.findAll({
       where,
       include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
-          { model: AppealModel, as: "Appeal" }
+        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
+          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
         ]},
       ],
     });
