@@ -40,11 +40,22 @@ class CTDOPController {
   async deleteCTDOP(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const result = await this.service.deleteCTDOP(id);
+      const result = await this.service.deleteCTDOP(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em deleteCTDOP:", error);
       return res.status(500).json("Erro interno ao deletar CTDOP.");
+    }
+  }
+
+  async reactivateCTDOP(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivateCTDOP(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivateCTDOP:", error);
+      return res.status(500).json("Erro interno ao reativar ctdop.");
     }
   }
 
