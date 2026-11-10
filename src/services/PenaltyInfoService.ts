@@ -6,7 +6,6 @@ import AppealModel from "../database/models/AppealModel";
 import PenaltyInfoInterface from "../database/interfaces/PenaltyInfoInterface";
 import { DocTypeEnum } from "../database/models/enums/DocTypeEnum";
 import { buildPenaltyInfoView } from "./integrations/PenaltyInfoAggregator";
-import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrations/integrationService";
 import Response from "../utils/Response";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
@@ -56,8 +55,9 @@ class PenaltyInfoService {
 
     const result = await this.model.findByPk(id, {
       include: [
-        { model: PenaltyDocModel, as: "penaltyDocs" },
-        { model: AppealModel, as: "appeals" },
+        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
+          { model: AppealModel, as: "Appeal" }
+        ]},
       ]
     });
 
@@ -74,8 +74,9 @@ class PenaltyInfoService {
   async getPenalty(id: string) {
     const penalty = await this.model.findByPk(id, {
       include: [
-        { model: PenaltyDocModel, as: "penaltyDocs" },
-        { model: AppealModel, as: "appeals" },
+        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
+          { model: AppealModel, as: "Appeal" }
+        ]},
       ],
     });
 
@@ -85,7 +86,12 @@ class PenaltyInfoService {
     return Response.ok("Penalidade encontrada!", result);
   }
 
-  //Refazer esse método, tem que dar pra pesquisar por company, vehicle, bustimetable, location, date, agent, finecode, status, motive
+  /**
+   * Busca penalidades por filtros locais. Empresa, veículo, itinerário e local
+   * são filtrados pelas colunas `fk*Id` de `penalty_info`, sem consultar outros módulos.
+   *
+   * @param query Filtros opcionais (todos por igualdade, exceto quando indicado).
+   */
   async findPenalties(query: {
     fkCompanyId?: string;
     fkVehicleId?: string;
@@ -97,72 +103,27 @@ class PenaltyInfoService {
     date?: string;
     penaltyInfoStatus?: string;
   }) {
-    const where: any = {};
+    const where: Partial<Record<keyof typeof query, string>> = {};
 
-    // Filtros diretos
-    if (query.date) where.date = query.date;
-    if (query.penaltyInfoStatus) where.penaltyInfoStatus = query.penaltyInfoStatus;
-
-    // Filtros internos (mesma API)
-    if (query.fkAgentId) where.fkAgentId = query.fkAgentId;
-    if (query.fkFineCodeId) where.fkFineCodeId = query.fkFineCodeId;
-    if (query.fkMotiveId) where.fkMotiveId = query.fkMotiveId;
+    const filterKeys = [
+      'fkCompanyId', 'fkVehicleId', 'fkBusTimetableId', 'fkLocationId',
+      'fkAgentId', 'fkFineCodeId', 'fkMotiveId', 'date', 'penaltyInfoStatus',
+    ] as const;
+    for (const key of filterKeys) {
+      if (query[key]) where[key] = query[key];
+    }
 
     const results = await this.model.findAll({
       where,
       include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc" , include: [
-          { model: AppealModel, as: "Appeal"}
+        { model: PenaltyDocModel, as: "PenaltyDoc", include: [
+          { model: AppealModel, as: "Appeal" }
         ]},
-        
       ],
     });
 
-    if (!results.length) return Response.notFound("Nenhuma penalidade encontrada.");
-
-    const filtered = await Promise.all(
-      results.map(async (penalty) => {
-        const {
-          fkCompanyId,
-          fkVehicleId,
-          fkBusTimetableId,
-          fkLocationId,
-        } = penalty;
-
-        const [
-          company,
-          vehicle,
-          busTimetable,
-          location
-        ] = await Promise.all([
-          query.fkCompanyId ? getCompanyById(fkCompanyId) : null,
-          query.fkVehicleId ? getVehicleById(fkVehicleId) : null,
-          query.fkBusTimetableId ? getBusTimetableById(fkBusTimetableId) : null,
-          query.fkLocationId ? getLocationById(fkLocationId) : null,
-        ]);
-
-        const isMatch =
-          (!query.fkCompanyId || company?.data?.companyId === query.fkCompanyId) &&
-          (!query.fkVehicleId || vehicle?.data?.vehicleId === query.fkVehicleId) &&
-          (!query.fkBusTimetableId || busTimetable?.data?.busTimetableId === query.fkBusTimetableId) &&
-          (!query.fkLocationId || location?.data?.locationId === query.fkLocationId);
-
-        if (!isMatch) return null;
-
-        return {
-          ...penalty.toJSON(),
-          company: company?.data || null,
-          vehicle: vehicle?.data || null,
-          busTimetable: busTimetable?.data || null,
-          location: location?.data || null,
-        };
-      })
-    );
-
-    const finalResult = filtered.filter(Boolean);
-
-    if (!finalResult.length) return Response.notFound("Nenhuma penalidade encontrada com os filtros fornecidos.");
-    return Response.ok("Penalidades encontradas com sucesso!", finalResult);
+    if (!results.length) return Response.notFound("Nenhuma penalidade encontrada com os filtros fornecidos.");
+    return Response.ok("Penalidades encontradas com sucesso!", results);
   }
 
 }
