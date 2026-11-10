@@ -1,5 +1,5 @@
 import PenaltyCompositeView from "../database/DTO/PenaltyCompositeView";
-import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel } from "../database/models";
+import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel, AgentModel, FineCodeModel, MotiveModel } from "../database/models";
 import Response, { StandardResponse } from "../utils/Response";
 
 import {
@@ -15,7 +15,11 @@ export class PenaltyViewService {
 
     const rawDocs = await PenaltyDocModel.findAll({
       include: [
-        { model: PenaltyInfoModel, as: 'PenaltyInfo' },
+        { model: PenaltyInfoModel, as: 'PenaltyInfo', include: [
+          { model: AgentModel, as: 'Agent' },
+          { model: FineCodeModel, as: 'FineCode' },
+          { model: MotiveModel, as: 'Motive' }
+        ]},
         { model: CTDOPModel, as: 'CTDOP' },
         { model: AppealModel, as: 'Appeal', required: false } // LEFT JOIN
       ],
@@ -62,29 +66,29 @@ export class PenaltyViewService {
 
         // Dados do PenaltyInfo (Evento) + Dados Externos Resolvidos
         fkCompanyId: info?.fkCompanyId,
-        company: extCompany ? extCompany.name : 'Desconhecida', // Ajuste a propriedade 'name' conforme o seu Registry
+        company: extCompany ? extCompany.companyName : 'Desconhecida',
 
         fkVehicleId: info?.fkVehicleId,
         vehicleNumber: extVehicle ? extVehicle.vehicleNumber : 'Desconhecido', // Ajuste para a sua propriedade
 
         fkBusTimetableId: info?.fkBusTimetableId,
-        busTimetableCode: extTimetable ? extTimetable.code : 'Desconhecido', // Ajuste para a sua propriedade
+        busTimetableCode: extTimetable ? extTimetable.timetableCode : 'Desconhecido',
 
         penaltyDate: penaltyDate,
 
         fkAgentId: info?.fkAgentId,
-        agentCode: info?.fkAgentId, // Se o Agente estiver no mesmo schema, altere para info?.Agent?.agentCode
+        agentCode: info?.Agent?.agentCode,
 
         fineCodeId: info?.fkFineCodeId,
-        fineCodeNumber: info?.fkFineCodeId, // Idem para FineCode
+        fineCodeNumber: info?.FineCode?.fineNumber,
 
         fkLocationId: info?.fkLocationId,
-        location: extLocation ? extLocation.name : 'Desconhecido',
+        location: extLocation ? extLocation.locationName : 'Desconhecido',
 
         agentAnnotation: info?.agentAnnotation,
         
         fkMotiveId: info?.fkMotiveId,
-        motive: info?.fkMotiveId, // Ajuste se fizer o include da tabela Motive
+        motive: info?.Motive?.motiveName,
         
         internalAnnotation: info?.internalAnnotation,
         penaltyStatus: info?.penaltyInfoStatus,
