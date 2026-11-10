@@ -40,11 +40,22 @@ class AppealController {
   async deleteAppeal(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const result = await this.service.deleteAppeal(id);
+      const result = await this.service.deleteAppeal(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em deleteAppeal:", error);
       return res.status(500).json("Erro interno ao deletar recurso.");
+    }
+  }
+
+  async reactivateAppeal(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivateAppeal(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivateAppeal:", error);
+      return res.status(500).json("Erro interno ao reativar recurso.");
     }
   }
 

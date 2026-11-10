@@ -40,11 +40,22 @@ class AnalysisController {
   async deleteAnalysis(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const result = await this.service.deleteAnalysis(id);
+      const result = await this.service.deleteAnalysis(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em deleteAnalysis:", error);
       return res.status(500).json("Erro interno ao deletar análise.");
+    }
+  }
+
+  async reactivateAnalysis(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivateAnalysis(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivateAnalysis:", error);
+      return res.status(500).json("Erro interno ao reativar análise.");
     }
   }
 

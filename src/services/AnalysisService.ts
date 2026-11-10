@@ -2,6 +2,7 @@ import { ModelStatic } from "sequelize";
 import AnalysisModel from "../database/models/AnalysisModel";
 import AnalysisInterface from "../database/interfaces/AnalysisInterface";
 import Response from "../utils/Response";
+import { PenaltyInfoModel } from "../database/models";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 
@@ -24,28 +25,61 @@ class AnalysisService {
     const { error } = UpdateValidationSchema.UpdateAnalysisValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    const [updated] = await this.model.update(data, { where: { analysisId: id } });
+    const [updated] = await this.model.update(data, { where: { analysisId: id, activated: true } });
     if (!updated) return Response.notFound("Análise não encontrada!");
 
-    const result = await this.model.findByPk(id);
+    const result = await this.model.findOne({ where: { analysisId: id, activated: true } });
     return Response.ok("Análise atualizada com sucesso!", result);
   }
 
-  async deleteAnalysis(id: string) {
-    const deleted = await this.model.destroy({ where: { analysisId: id } });
-    if (!deleted) return Response.notFound("Análise não encontrada!");
+  /**
+   * Desativa o registro (exclusão lógica): `activated = false`.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async deleteAnalysis(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
 
-    return Response.ok("Análise deletada com sucesso!");
+    const [updated] = await this.model.update(
+      { activated: false, updatedBy, updatedAt: new Date() },
+      { where: { analysisId: id, activated: true } }
+    );
+    if (!updated) return Response.notFound("Análise não encontrada!");
+
+    return Response.ok("Análise desativada com sucesso!");
+  }
+
+  /**
+   * Reativa um registro desativado (`activated = true`).
+   * Responde 409 se um registro pai estiver inativo.
+   *
+   * @param id Identificador do registro.
+   * @param updatedBy Usuário autenticado que executa a operação.
+   */
+  async reactivateAnalysis(id: string, updatedBy: string) {
+    if (!id) return Response.badRequest("ID não informado");
+
+    const record = await this.model.findOne({ where: { analysisId: id, activated: false } });
+    if (!record) return Response.notFound("Análise não encontrada ou já ativa!");
+
+    if (!(await PenaltyInfoModel.count({ where: { penaltyInfoId: record.fkPenaltyInfoId, activated: true } }))) {
+      return Response.conflict("Não é possível reativar: a penalidade está inativa.");
+    }
+
+    await record.update({ activated: true, updatedBy, updatedAt: new Date() });
+
+    return Response.ok("Análise reativada com sucesso!");
   }
 
   async getAnalysis(id: string) {
-    const result = await this.model.findByPk(id);
+    const result = await this.model.findOne({ where: { analysisId: id, activated: true } });
     if (!result) return Response.notFound("Análise não encontrada!");
     return Response.ok("Análise encontrada!", result);
   }
 
   async findAnalyses(query: { fkPenaltyInfoId?: string; fkEmployeeId?: string }) {
-    const where: any = {};
+    const where: any = { activated: true };
     if (query.fkPenaltyInfoId) where.fkPenaltyInfoId = query.fkPenaltyInfoId;
     if (query.fkEmployeeId) where.fkEmployeeId = query.fkEmployeeId;
 

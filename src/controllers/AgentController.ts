@@ -40,11 +40,22 @@ class AgentController {
   async deleteAgent(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const result = await this.service.deleteAgent(id);
+      const result = await this.service.deleteAgent(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
       console.error("Erro em deleteAgent:", error);
       return res.status(500).json("Erro interno ao deletar agente.");
+    }
+  }
+
+  async reactivateAgent(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const result = await this.service.reactivateAgent(id, res.locals.user.userId);
+      return res.status(result.status).json(result);
+    } catch (error) {
+      console.error("Erro em reactivateAgent:", error);
+      return res.status(500).json("Erro interno ao reativar agente.");
     }
   }
 
