@@ -1,4 +1,4 @@
-import { axiosRegistry } from "./axiosInstance";
+import { axiosOperations, axiosRegistry } from "./axiosInstance";
 import { operationsRoutes, registryRoutes } from "./endpoints";
 
 export const getCompanyById = async (id: string) => {
@@ -14,7 +14,7 @@ export const getCompanyById = async (id: string) => {
 export const getCompaniesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(operationsRoutes.getCompaniesBulk, { ids });
+    const response = await axiosRegistry.post(registryRoutes.getCompaniesBulk, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar empresas em lote:", error);
@@ -24,7 +24,7 @@ export const getCompaniesByIds = async (ids: string[]) => {
 
 export const getVehicleById = async (id: string ) => {
   try {
-    const response = await axiosRegistry.get(operationsRoutes.getVehicleById(id));
+    const response = await axiosOperations.get(operationsRoutes.getVehicleById(id));
     return response.data?.data || null;
   } catch (error: any) {
     console.error(`Erro ao buscar o veículo ${id}`, error.message);
@@ -35,7 +35,7 @@ export const getVehicleById = async (id: string ) => {
 export const getVehiclesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(operationsRoutes.getVehiclesBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getVehiclesBulk, { ids });
     return response.data?.data || []; 
   } catch (error: any) {
     console.error(`Erro na busca em lote de veículos:`, error.message);
@@ -45,7 +45,7 @@ export const getVehiclesByIds = async (ids: string[]) => {
 
 export const getBusTimetableById = async (id: string ) => {
   try {
-    const response = await axiosRegistry.get(operationsRoutes.getBusTimetableById(id));
+    const response = await axiosOperations.get(operationsRoutes.getBusTimetableById(id));
     return response.data?.data || null;
   } catch (error: any) {
     console.error(`Erro ao buscar o itinerário ${id}`, error.message);
@@ -56,7 +56,7 @@ export const getBusTimetableById = async (id: string ) => {
 export const getBusTimetablesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(operationsRoutes.getBusTimetablesBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getBusTimetablesBulk, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar itinerários em lote:", error);
@@ -66,10 +66,10 @@ export const getBusTimetablesByIds = async (ids: string[]) => {
 
 export const getLocationById = async (id: string ) => {
   try {
-    const response = await axiosRegistry.get(operationsRoutes.getLocationById(id));
+    const response = await axiosOperations.get(operationsRoutes.getLocationById(id));
     return response.data?.data || null;
   } catch (error: any) {
-    console.error(`Erro ao buscar o veículo ${id}`, error.message);
+    console.error(`Erro ao buscar o local ${id}`, error.message);
     return null;
   }
 };
@@ -77,7 +77,7 @@ export const getLocationById = async (id: string ) => {
 export const getLocationsByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(operationsRoutes.getLocationsBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getLocationsBulk, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar locais em lote:", error);
