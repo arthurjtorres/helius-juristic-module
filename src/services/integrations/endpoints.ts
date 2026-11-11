@@ -12,6 +12,7 @@ export const registryRoutes = {
 
   // --- Rotas em Lote ---  
   getEmployeesBulk: `/employee/bulk`,
+  getCompaniesBulk: `/company/bulk`, // ainda não existe no registry (T09)
   
 };
 
@@ -23,7 +24,6 @@ export const operationsRoutes = {
   getBusTimetableById: (id: string) => `/bus-timetable/${id}`,
 
   // --- Rotas em Lote ---
-  getCompaniesBulk: `/company/bulk`,
   getVehiclesBulk: `/vehicle/bulk`,
   getLocationsBulk: `/location/bulk`,
   getBusTimetablesBulk: `/bus-timetable/bulk`,
