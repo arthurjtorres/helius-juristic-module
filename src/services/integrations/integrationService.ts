@@ -14,7 +14,7 @@ export const getCompanyById = async (id: string) => {
 export const getCompaniesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(registryRoutes.getCompaniesBulk, { ids });
+    const response = await axiosRegistry.post(registryRoutes.getCompaniesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar empresas em lote:", error);
@@ -35,7 +35,7 @@ export const getVehicleById = async (id: string ) => {
 export const getVehiclesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getVehiclesBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getVehiclesLookup, { ids });
     return response.data?.data || []; 
   } catch (error: any) {
     console.error(`Erro na busca em lote de veículos:`, error.message);
@@ -56,7 +56,7 @@ export const getBusTimetableById = async (id: string ) => {
 export const getBusTimetablesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getBusTimetablesBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getBusTimetablesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar itinerários em lote:", error);
@@ -77,7 +77,7 @@ export const getLocationById = async (id: string ) => {
 export const getLocationsByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getLocationsBulk, { ids });
+    const response = await axiosOperations.post(operationsRoutes.getLocationsLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     console.error("Erro ao procurar locais em lote:", error);
