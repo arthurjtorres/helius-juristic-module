@@ -10,9 +10,8 @@ export const registryRoutes = {
   getDocumentById: (id: string) => `/document/${id}`,
   getEmployeeById: (id: string) => `/employee/${id}`,  
 
-  // --- Rotas em Lote ---  
-  getEmployeesBulk: `/employee/bulk`,
-  getCompaniesBulk: `/company/bulk`, // ainda não existe no registry (T09)
+  // --- Consulta por IDs (POST /lookup, T09). `/bulk` é reservada à inserção. ---
+  getCompaniesLookup: `/company/lookup`,
   
 };
 
@@ -23,8 +22,8 @@ export const operationsRoutes = {
   getLocationById: (id: string) => `/location/${id}`,
   getBusTimetableById: (id: string) => `/bus-timetable/${id}`,
 
-  // --- Rotas em Lote ---
-  getVehiclesBulk: `/vehicle/bulk`,
-  getLocationsBulk: `/location/bulk`,
-  getBusTimetablesBulk: `/bus-timetable/bulk`,
+  // --- Consulta por IDs (POST /lookup, T09). `/bulk` é reservada à inserção. ---
+  getVehiclesLookup: `/vehicle/lookup`,
+  getLocationsLookup: `/location/lookup`,
+  getBusTimetablesLookup: `/bus-timetable/lookup`,
 }
