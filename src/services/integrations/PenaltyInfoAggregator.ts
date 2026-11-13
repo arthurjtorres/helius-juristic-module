@@ -1,5 +1,6 @@
 import { getBusTimetableById, getCompanyById, getLocationById, getVehicleById } from "./integrationService";
 import PenaltyInfoModel from "../../database/models/PenaltyInfoModel";
+import { logError } from "../../utils/logError";
 
 export const buildPenaltyInfoView = async (penalty: PenaltyInfoModel) => {
   try {
@@ -17,8 +18,8 @@ export const buildPenaltyInfoView = async (penalty: PenaltyInfoModel) => {
       timetable,
       location,
     };
-  } catch (error: any) {
-    console.error("Erro ao buscar dados:", error.message);
+  } catch (error: unknown) {
+    logError("buildPenaltyInfoView", error);
     return penalty; // Retorna o dado parcial se falhar
   }
 

@@ -1,12 +1,13 @@
 import { axiosOperations, axiosRegistry } from "./axiosInstance";
 import { operationsRoutes, registryRoutes } from "./endpoints";
+import { logError } from "../../utils/logError";
 
 export const getCompanyById = async (id: string) => {
   try {
     const response = await axiosRegistry.get(registryRoutes.getCompanyById(id));
     return response.data?.data || null;
-  } catch (error: any) {
-    console.error(`Erro ao buscar a empresa ${id}:`, error.message);
+  } catch (error: unknown) {
+    logError("getCompanyById", error);
     return null;
   }
 };
@@ -17,7 +18,7 @@ export const getCompaniesByIds = async (ids: string[]) => {
     const response = await axiosRegistry.post(registryRoutes.getCompaniesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
-    console.error("Erro ao procurar empresas em lote:", error);
+    logError("getCompaniesByIds", error);
     return [];
   }
 };
@@ -26,8 +27,8 @@ export const getVehicleById = async (id: string ) => {
   try {
     const response = await axiosOperations.get(operationsRoutes.getVehicleById(id));
     return response.data?.data || null;
-  } catch (error: any) {
-    console.error(`Erro ao buscar o veículo ${id}`, error.message);
+  } catch (error: unknown) {
+    logError("getVehicleById", error);
     return null;
   }
 };
@@ -37,8 +38,8 @@ export const getVehiclesByIds = async (ids: string[]) => {
   try {
     const response = await axiosOperations.post(operationsRoutes.getVehiclesLookup, { ids });
     return response.data?.data || []; 
-  } catch (error: any) {
-    console.error(`Erro na busca em lote de veículos:`, error.message);
+  } catch (error: unknown) {
+    logError("getVehiclesByIds", error);
     return [];
   }
 };
@@ -47,8 +48,8 @@ export const getBusTimetableById = async (id: string ) => {
   try {
     const response = await axiosOperations.get(operationsRoutes.getBusTimetableById(id));
     return response.data?.data || null;
-  } catch (error: any) {
-    console.error(`Erro ao buscar o itinerário ${id}`, error.message);
+  } catch (error: unknown) {
+    logError("getBusTimetableById", error);
     return null;
   }
 };
@@ -59,7 +60,7 @@ export const getBusTimetablesByIds = async (ids: string[]) => {
     const response = await axiosOperations.post(operationsRoutes.getBusTimetablesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
-    console.error("Erro ao procurar itinerários em lote:", error);
+    logError("getBusTimetablesByIds", error);
     return [];
   }
 };
@@ -68,8 +69,8 @@ export const getLocationById = async (id: string ) => {
   try {
     const response = await axiosOperations.get(operationsRoutes.getLocationById(id));
     return response.data?.data || null;
-  } catch (error: any) {
-    console.error(`Erro ao buscar o local ${id}`, error.message);
+  } catch (error: unknown) {
+    logError("getLocationById", error);
     return null;
   }
 };
@@ -80,7 +81,7 @@ export const getLocationsByIds = async (ids: string[]) => {
     const response = await axiosOperations.post(operationsRoutes.getLocationsLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
-    console.error("Erro ao procurar locais em lote:", error);
+    logError("getLocationsByIds", error);
     return [];
   }
 };

@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import AppealService from "../services/AppealService";
 
 class AppealController {
@@ -15,8 +17,9 @@ class AppealController {
       const result = await this.service.createAppeal(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createAppeal:", error);
-      return res.status(500).json("Erro interno ao criar recurso.");
+      logError("Erro em createAppeal", error);
+      const resp = Resp.internalError("Erro interno ao criar recurso.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class AppealController {
       const result = await this.service.updateAppeal(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updateAppeal:", error);
-      return res.status(500).json("Erro interno ao atualizar recurso.");
+      logError("Erro em updateAppeal", error);
+      const resp = Resp.internalError("Erro interno ao atualizar recurso.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class AppealController {
       const result = await this.service.deleteAppeal(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deleteAppeal:", error);
-      return res.status(500).json("Erro interno ao deletar recurso.");
+      logError("Erro em deleteAppeal", error);
+      const resp = Resp.internalError("Erro interno ao deletar recurso.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class AppealController {
       const result = await this.service.reactivateAppeal(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivateAppeal:", error);
-      return res.status(500).json("Erro interno ao reativar recurso.");
+      logError("Erro em reactivateAppeal", error);
+      const resp = Resp.internalError("Erro interno ao reativar recurso.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class AppealController {
       const result = await this.service.getAppeal(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getAppeal:", error);
-      return res.status(500).json("Erro interno ao buscar recurso.");
+      logError("Erro em getAppeal", error);
+      const resp = Resp.internalError("Erro interno ao buscar recurso.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class AppealController {
       const result = await this.service.findAppeals(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findAppeals:", error);
-      return res.status(500).json("Erro interno ao buscar recursos.");
+      logError("Erro em findAppeals", error);
+      const resp = Resp.internalError("Erro interno ao buscar recursos.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

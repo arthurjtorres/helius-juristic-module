@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import MotiveService from "../services/MotiveService";
 
 class MotiveController {
@@ -15,8 +17,9 @@ class MotiveController {
       const result = await this.service.createMotive(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createMotive:", error);
-      return res.status(500).json("Erro interno ao criar motivo.");
+      logError("Erro em createMotive", error);
+      const resp = Resp.internalError("Erro interno ao criar motivo.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class MotiveController {
       const result = await this.service.updateMotive(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updateMotive:", error);
-      return res.status(500).json("Erro interno ao atualizar motivo.");
+      logError("Erro em updateMotive", error);
+      const resp = Resp.internalError("Erro interno ao atualizar motivo.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class MotiveController {
       const result = await this.service.deleteMotive(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deleteMotive:", error);
-      return res.status(500).json("Erro interno ao deletar motivo.");
+      logError("Erro em deleteMotive", error);
+      const resp = Resp.internalError("Erro interno ao deletar motivo.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class MotiveController {
       const result = await this.service.reactivateMotive(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivateMotive:", error);
-      return res.status(500).json("Erro interno ao reativar motivo.");
+      logError("Erro em reactivateMotive", error);
+      const resp = Resp.internalError("Erro interno ao reativar motivo.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class MotiveController {
       const result = await this.service.getMotive(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getMotive:", error);
-      return res.status(500).json("Erro interno ao buscar motivo.");
+      logError("Erro em getMotive", error);
+      const resp = Resp.internalError("Erro interno ao buscar motivo.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class MotiveController {
       const result = await this.service.findMotives(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findMotives:", error);
-      return res.status(500).json("Erro interno ao buscar motivos.");
+      logError("Erro em findMotives", error);
+      const resp = Resp.internalError("Erro interno ao buscar motivos.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

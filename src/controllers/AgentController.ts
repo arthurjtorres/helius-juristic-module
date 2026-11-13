@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import AgentService from "../services/AgentService";
 
 class AgentController {
@@ -15,8 +17,9 @@ class AgentController {
       const result = await this.service.createAgent(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createAgent:", error);
-      return res.status(500).json("Erro interno ao criar agente.");
+      logError("Erro em createAgent", error);
+      const resp = Resp.internalError("Erro interno ao criar agente.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class AgentController {
       const result = await this.service.updateAgent(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updateAgent:", error);
-      return res.status(500).json("Erro interno ao atualizar agente.");
+      logError("Erro em updateAgent", error);
+      const resp = Resp.internalError("Erro interno ao atualizar agente.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class AgentController {
       const result = await this.service.deleteAgent(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deleteAgent:", error);
-      return res.status(500).json("Erro interno ao deletar agente.");
+      logError("Erro em deleteAgent", error);
+      const resp = Resp.internalError("Erro interno ao deletar agente.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class AgentController {
       const result = await this.service.reactivateAgent(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivateAgent:", error);
-      return res.status(500).json("Erro interno ao reativar agente.");
+      logError("Erro em reactivateAgent", error);
+      const resp = Resp.internalError("Erro interno ao reativar agente.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class AgentController {
       const result = await this.service.getAgent(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getAgent:", error);
-      return res.status(500).json("Erro interno ao buscar agente.");
+      logError("Erro em getAgent", error);
+      const resp = Resp.internalError("Erro interno ao buscar agente.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class AgentController {
       const result = await this.service.findAgent(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findAgent:", error);
-      return res.status(500).json("Erro interno ao buscar agentes.");
+      logError("Erro em findAgent", error);
+      const resp = Resp.internalError("Erro interno ao buscar agentes.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

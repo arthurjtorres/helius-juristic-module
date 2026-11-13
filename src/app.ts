@@ -1,6 +1,7 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import cors from 'cors'
 import router from "./routes";
+import errorHandler from "./middlewares/ErrorHandler";
 
 
 const app = express();
@@ -11,9 +12,6 @@ app.use(cors());
 app.use(router);
 app.get('/', (req, res) => res.status(200).send('Rodando irregularidade aqui!'));
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error("Erro não tratado:", err);
-  return res.status(500).json({ message: "Erro interno do servidor" });
-})
+app.use(errorHandler);
 
 export default app;
