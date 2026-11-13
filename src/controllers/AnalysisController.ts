@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import AnalysisService from "../services/AnalysisService";
 
 class AnalysisController {
@@ -15,8 +17,9 @@ class AnalysisController {
       const result = await this.service.createAnalysis(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createAnalysis:", error);
-      return res.status(500).json("Erro interno ao criar análise.");
+      logError("Erro em createAnalysis", error);
+      const resp = Resp.internalError("Erro interno ao criar análise.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class AnalysisController {
       const result = await this.service.updateAnalysis(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updateAnalysis:", error);
-      return res.status(500).json("Erro interno ao atualizar análise.");
+      logError("Erro em updateAnalysis", error);
+      const resp = Resp.internalError("Erro interno ao atualizar análise.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class AnalysisController {
       const result = await this.service.deleteAnalysis(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deleteAnalysis:", error);
-      return res.status(500).json("Erro interno ao deletar análise.");
+      logError("Erro em deleteAnalysis", error);
+      const resp = Resp.internalError("Erro interno ao deletar análise.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class AnalysisController {
       const result = await this.service.reactivateAnalysis(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivateAnalysis:", error);
-      return res.status(500).json("Erro interno ao reativar análise.");
+      logError("Erro em reactivateAnalysis", error);
+      const resp = Resp.internalError("Erro interno ao reativar análise.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class AnalysisController {
       const result = await this.service.getAnalysis(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getAnalysis:", error);
-      return res.status(500).json("Erro interno ao buscar análise.");
+      logError("Erro em getAnalysis", error);
+      const resp = Resp.internalError("Erro interno ao buscar análise.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class AnalysisController {
       const result = await this.service.findAnalyses(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findAnalyses:", error);
-      return res.status(500).json("Erro interno ao buscar análises.");
+      logError("Erro em findAnalyses", error);
+      const resp = Resp.internalError("Erro interno ao buscar análises.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import CTDOPService from "../services/CTDOPService";
 
 class CTDOPController {
@@ -15,8 +17,9 @@ class CTDOPController {
       const result = await this.service.createCTDOP(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createCTDOP:", error);
-      return res.status(500).json("Erro interno ao criar CTDOP.");
+      logError("Erro em createCTDOP", error);
+      const resp = Resp.internalError("Erro interno ao criar CTDOP.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class CTDOPController {
       const result = await this.service.updateCTDOP(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updateCTDOP:", error);
-      return res.status(500).json("Erro interno ao atualizar CTDOP.");
+      logError("Erro em updateCTDOP", error);
+      const resp = Resp.internalError("Erro interno ao atualizar CTDOP.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class CTDOPController {
       const result = await this.service.deleteCTDOP(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deleteCTDOP:", error);
-      return res.status(500).json("Erro interno ao deletar CTDOP.");
+      logError("Erro em deleteCTDOP", error);
+      const resp = Resp.internalError("Erro interno ao deletar CTDOP.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class CTDOPController {
       const result = await this.service.reactivateCTDOP(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivateCTDOP:", error);
-      return res.status(500).json("Erro interno ao reativar ctdop.");
+      logError("Erro em reactivateCTDOP", error);
+      const resp = Resp.internalError("Erro interno ao reativar ctdop.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class CTDOPController {
       const result = await this.service.getCTDOP(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getCTDOP:", error);
-      return res.status(500).json("Erro interno ao buscar CTDOP.");
+      logError("Erro em getCTDOP", error);
+      const resp = Resp.internalError("Erro interno ao buscar CTDOP.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class CTDOPController {
       const result = await this.service.findCTDOPs(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findCTDOPs:", error);
-      return res.status(500).json("Erro interno ao buscar CTDOPs.");
+      logError("Erro em findCTDOPs", error);
+      const resp = Resp.internalError("Erro interno ao buscar CTDOPs.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

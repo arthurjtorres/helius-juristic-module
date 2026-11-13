@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import PenaltyInfoService from "../services/PenaltyInfoService";
 
 class PenaltyController {
@@ -15,8 +17,9 @@ class PenaltyController {
       const result = await this.service.createPenalty(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createPenalty:", error);
-      return res.status(500).json("Erro interno ao criar penalidade.");
+      logError("Erro em createPenalty", error);
+      const resp = Resp.internalError("Erro interno ao criar penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class PenaltyController {
       const result = await this.service.updatePenalty(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updatePenalty:", error);
-      return res.status(500).json("Erro interno ao atualizar penalidade.");
+      logError("Erro em updatePenalty", error);
+      const resp = Resp.internalError("Erro interno ao atualizar penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class PenaltyController {
       const result = await this.service.deletePenalty(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deletePenalty:", error);
-      return res.status(500).json("Erro interno ao deletar penalidade.");
+      logError("Erro em deletePenalty", error);
+      const resp = Resp.internalError("Erro interno ao deletar penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class PenaltyController {
       const result = await this.service.reactivatePenalty(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivatePenalty:", error);
-      return res.status(500).json("Erro interno ao reativar penalidade.");
+      logError("Erro em reactivatePenalty", error);
+      const resp = Resp.internalError("Erro interno ao reativar penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class PenaltyController {
       const result = await this.service.getPenalty(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getPenalty:", error);
-      return res.status(500).json("Erro interno ao buscar penalidade.");
+      logError("Erro em getPenalty", error);
+      const resp = Resp.internalError("Erro interno ao buscar penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class PenaltyController {
       const result = await this.service.findPenalties(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findPenalties:", error);
-      return res.status(500).json("Erro interno ao buscar penalidades.");
+      logError("Erro em findPenalties", error);
+      const resp = Resp.internalError("Erro interno ao buscar penalidades.");
+      return res.status(resp.status).json(resp);
     }
   }
 }
