@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { logError } from "../utils/logError";
+import Resp from "../utils/Response";
 import PenaltyDocService from "../services/PenaltyDocService";
 
 class PenaltyDocController {
@@ -15,8 +17,9 @@ class PenaltyDocController {
       const result = await this.service.createPenaltyDoc(data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em createPenaltyDoc:", error);
-      return res.status(500).json("Erro interno ao criar documento de penalidade.");
+      logError("Erro em createPenaltyDoc", error);
+      const resp = Resp.internalError("Erro interno ao criar documento de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -32,8 +35,9 @@ class PenaltyDocController {
       const result = await this.service.updatePenaltyDoc(id, data);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em updatePenaltyDoc:", error);
-      return res.status(500).json("Erro interno ao atualizar documento de penalidade.");
+      logError("Erro em updatePenaltyDoc", error);
+      const resp = Resp.internalError("Erro interno ao atualizar documento de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -43,8 +47,9 @@ class PenaltyDocController {
       const result = await this.service.deletePenaltyDoc(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em deletePenaltyDoc:", error);
-      return res.status(500).json("Erro interno ao deletar documento de penalidade.");
+      logError("Erro em deletePenaltyDoc", error);
+      const resp = Resp.internalError("Erro interno ao deletar documento de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -54,8 +59,9 @@ class PenaltyDocController {
       const result = await this.service.reactivatePenaltyDoc(id, res.locals.user.userId);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em reactivatePenaltyDoc:", error);
-      return res.status(500).json("Erro interno ao reativar documento de penalidade.");
+      logError("Erro em reactivatePenaltyDoc", error);
+      const resp = Resp.internalError("Erro interno ao reativar documento de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -65,8 +71,9 @@ class PenaltyDocController {
       const result = await this.service.getPenaltyDoc(id);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em getPenaltyDoc:", error);
-      return res.status(500).json("Erro interno ao buscar documento de penalidade.");
+      logError("Erro em getPenaltyDoc", error);
+      const resp = Resp.internalError("Erro interno ao buscar documento de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 
@@ -75,8 +82,9 @@ class PenaltyDocController {
       const result = await this.service.findPenaltyDocs(req.query);
       return res.status(result.status).json(result);
     } catch (error) {
-      console.error("Erro em findPenaltyDocs:", error);
-      return res.status(500).json("Erro interno ao buscar documentos de penalidade.");
+      logError("Erro em findPenaltyDocs", error);
+      const resp = Resp.internalError("Erro interno ao buscar documentos de penalidade.");
+      return res.status(resp.status).json(resp);
     }
   }
 }

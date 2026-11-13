@@ -1,6 +1,7 @@
 import { Request, Response as ExpressResponse, NextFunction } from "express";
 import { PenaltyViewService } from "../services/PenaltyViewService";
 import Response from "../utils/Response";
+import { logError } from "../utils/logError";
 
 class PenaltyViewController {
   private service = new PenaltyViewService();
@@ -11,9 +12,9 @@ class PenaltyViewController {
       const result = await this.service.getCompositeTableData();
       
       return res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Erro em getCompositeData:", error);
-     const errorResponse = Response.internalError("Erro interno ao montar a visão composta das penalidades.");
+    } catch (error: unknown) {
+      logError("getCompositeData", error);
+      const errorResponse = Response.internalError("Erro interno ao montar a visão composta das penalidades.");
       return res.status(errorResponse.status).json(errorResponse);
     }
   }
