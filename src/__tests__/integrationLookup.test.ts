@@ -1,3 +1,5 @@
+import { AxiosError, AxiosHeaders } from 'axios';
+import { format } from 'util';
 import { axiosOperations, axiosRegistry } from '../services/integrations/axiosInstance';
 import { operationsRoutes, registryRoutes } from '../services/integrations/endpoints';
 import {
@@ -44,6 +46,18 @@ describe('consultas em lote do juristic usam /lookup (T09)', () => {
     it(`${nome}: erro do provedor devolve lista vazia`, async () => {
       post.mockRejectedValue(new Error('indisponível'));
       expect(await fn(['a'])).toEqual([]);
+    });
+    it(`${nome}: erro do provedor não registra o token de serviço (T07 item 5)`, async () => {
+      const headers = new AxiosHeaders({ Authorization: 'Bearer token.de.servico' });
+      const config: any = { method: 'post', url: esperada, headers, data: '{"ids":["a"]}' };
+      post.mockRejectedValue(new AxiosError('Request failed with status code 503', 'ERR_BAD_RESPONSE', config, {},
+        { status: 503, data: { detalhe: 'corpo' }, headers: {}, config, statusText: '' } as any));
+      expect(await fn(['a'])).toEqual([]);
+      const out = (console.error as jest.Mock).mock.calls.map(c => format(...c)).join(' | ');
+      expect(out).toContain(esperada);
+      expect(out).not.toContain('Bearer');
+      expect(out).not.toContain('token.de.servico');
+      expect(out).not.toContain('corpo');
     });
   });
 
