@@ -1,69 +1,33 @@
 import joi from "joi";
 import Validation from "./CreateValidationSchema";
 
-const UpdateAgentValidation = Validation.AgentValidation.fork(
-  Object.keys(Validation.AgentValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
+const updateAudit = {
   updatedAt: joi.date().required(),
   updatedBy: joi.string().required(),
-});
+};
 
-const UpdateAnalysisValidation = Validation.AnalysisValidation.fork(
-  Object.keys(Validation.AnalysisValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
+/** Mesmo schema da criação com todos os campos opcionais, sem os de criação e com os de atualização. */
+const toUpdate = (schema: joi.ObjectSchema, omit: string[] = []) => {
+  const keys = Object.keys(schema.describe().keys).filter(k => !['createdAt', 'createdBy', ...omit].includes(k));
+  return schema
+    .fork(keys, (s) => s.optional())
+    .fork(['createdAt', 'createdBy', ...omit], (s) => s.forbidden())
+    .keys(updateAudit);
+};
 
-const UpdateAppealValidation = Validation.AppealValidation.fork(
-  Object.keys(Validation.AppealValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
+const UpdateAgentValidation = toUpdate(Validation.AgentValidation);
+const UpdateAnalysisValidation = toUpdate(Validation.AnalysisValidation);
+const UpdateCTDOPValidation = toUpdate(Validation.CTDOPValidation);
+const UpdateFineCodeValidation = toUpdate(Validation.FineCodeValidation);
+const UpdateMotiveValidation = toUpdate(Validation.MotiveValidation);
+const UpdateProtocolValidation = toUpdate(Validation.ProtocolValidation);
+const UpdatePenaltyInfoValidation = toUpdate(Validation.PenaltyInfoValidation);
 
-const UpdateCTDOPValidation = Validation.CTDOPValidation.fork(
-  Object.keys(Validation.CTDOPValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
+/** Tipo e fato do documento não mudam: para isso, desative e cadastre outro. */
+const UpdatePenaltyDocValidation = toUpdate(Validation.PenaltyDocValidation, ['penaltyDocType', 'fkPenaltyInfoId']);
 
-const UpdateFineCodeValidation = Validation.FineCodeValidation.fork(
-  Object.keys(Validation.FineCodeValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
-
-const UpdateMotiveValidation = Validation.MotiveValidation.fork(
-  Object.keys(Validation.MotiveValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
-
-const UpdatePenaltyDocValidation = Validation.PenaltyDocValidation.fork(
-  Object.keys(Validation.PenaltyDocValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
-
-const UpdatePenaltyInfoValidation = Validation.PenaltyInfoValidation.fork(
-  Object.keys(Validation.PenaltyInfoValidation.describe().keys),
-  (schema) => schema.optional()
-).keys({
-  updatedAt: joi.date().required(),
-  updatedBy: joi.string().required(),
-});
+/** O documento do recurso não muda; protocolo e resposta sim. */
+const UpdateAppealValidation = toUpdate(Validation.AppealValidation, ['fkPenaltyDocId']);
 
 export = {
   UpdateAgentValidation,
@@ -72,6 +36,7 @@ export = {
   UpdateCTDOPValidation,
   UpdateFineCodeValidation,
   UpdateMotiveValidation,
+  UpdateProtocolValidation,
   UpdatePenaltyDocValidation,
   UpdatePenaltyInfoValidation,
 }
