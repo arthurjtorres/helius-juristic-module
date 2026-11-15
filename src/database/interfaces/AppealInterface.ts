@@ -1,14 +1,11 @@
-// Interface: AppealInterface.ts
-import { DocTypeEnum } from "../models/enums/DocTypeEnum";
+import { AppealResponseEnum } from "../models/enums/AppealResponseEnum";
 
 export default interface AppealInterface {
   appealId?: string;
-  appealType: DocTypeEnum;
-  protocolNumber: string;
-  protocolDate: string;
-  response?: string;
-  responseDate?: string;
-  responseCtdop?: string;
+  fkProtocolId: string;
+  fkPenaltyDocId: string;
+  response?: AppealResponseEnum | null;
+  fkResponseCtdopId?: string | null;
 
   createdAt: Date;
   createdBy: string;
