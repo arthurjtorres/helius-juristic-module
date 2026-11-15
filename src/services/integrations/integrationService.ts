@@ -85,3 +85,16 @@ export const getLocationsByIds = async (ids: string[]) => {
     return [];
   }
 };
+/**
+ * Consórcio (`fkCorporationId`) de uma empresa ativa, para gravar na penalidade.
+ * Diferente das demais consultas, não engole o erro: se o `registry` falhar, a exceção sobe
+ * e a gravação é abortada (500), em vez de tratar a empresa como inexistente.
+ *
+ * @param companyId Empresa (`registry.company`).
+ * @returns `fkCorporationId` da empresa, ou `null` se ela não existe ou está inativa.
+ */
+export const getCompanyCorporationId = async (companyId: string): Promise<string | null> => {
+  const response = await axiosRegistry.post(registryRoutes.getCompaniesLookup, { ids: [companyId] });
+  const company = (response.data?.data || []).find((c: any) => c.companyId === companyId);
+  return company?.fkCorporationId ?? null;
+};
