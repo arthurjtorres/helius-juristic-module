@@ -1,14 +1,14 @@
-import { DocTypeEnum } from "../models/enums/DocTypeEnum";
+import { CtdopTypeEnum } from "../models/enums/CtdopTypeEnum";
 
 export default interface CTDOPInterface {
   ctdopId?: string;
-  ctdopNumber: string;
-  receiveDate?: string;
-  docType: DocTypeEnum;
-  responseDate?: string;
-  refMonth: string;
-  period: string;
-  refYear: number;
+  ctdopNumber?: string | null;
+  receiveDate?: string | null;
+  docType: CtdopTypeEnum;
+  responseDeadline?: string | null;
+  refMonth?: number | null;
+  period?: number | null;
+  refYear?: number | null;
 
   createdAt: Date;
   createdBy: string;

@@ -2,9 +2,9 @@ export default interface FineCodeInterface {
   fineCodeId?: string;
   fineNumber?: string;
   fineDescription: string;
-  fineKm?: string;
+  fineKm?: number;
   fineAlias?: string;
-  fineOrder?: string;
+  fineOrder?: string | null;
 
   createdAt: Date;
   createdBy: string;

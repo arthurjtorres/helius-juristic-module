@@ -6,9 +6,9 @@ class FineCodeModel extends Model {
   declare fineCodeId: string;
   declare fineNumber: string;
   declare fineDescription: string;
-  declare fineKm: string;
+  declare fineKm: number;
   declare fineAlias: string;
-  declare fineOrder: string;
+  declare fineOrder: string | null;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -27,6 +27,7 @@ FineCodeModel.init({
   fineNumber: {
     type: sequelize.STRING,
     allowNull: false,
+    unique: true,
     defaultValue: sequelize.literal("nextval('juristic.fine_number_seq')::text"),
   },
   fineDescription: {
@@ -34,7 +35,7 @@ FineCodeModel.init({
     allowNull: false,
   },
   fineKm: {
-    type: sequelize.STRING,
+    type: sequelize.INTEGER,
     allowNull: false,
   },
   fineAlias: {
@@ -43,7 +44,7 @@ FineCodeModel.init({
   },
   fineOrder: {
     type: sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 
   createdAt: {

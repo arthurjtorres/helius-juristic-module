@@ -1,5 +1,5 @@
 import PenaltyCompositeView from "../database/DTO/PenaltyCompositeView";
-import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel, AgentModel, FineCodeModel, MotiveModel } from "../database/models";
+import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel, AgentModel, FineCodeModel, MotiveModel, ProtocolModel } from "../database/models";
 import Response, { StandardResponse } from "../utils/Response";
 
 import {
@@ -8,6 +8,20 @@ import {
   getBusTimetablesByIds,
   getLocationsByIds
 } from "./integrations/integrationService";
+
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Número da carta ou, enquanto ele não chega, o rótulo por decêndio usado na planilha (ex.: `#01-05/2025`). */
+export const ctdopLabel = (ctdop?: { ctdopNumber?: string | null; period?: number | null; refMonth?: number | null; refYear?: number | null }) => {
+  if (!ctdop) return undefined;
+  if (ctdop.ctdopNumber) return ctdop.ctdopNumber;
+  if (ctdop.period == null || ctdop.refMonth == null || ctdop.refYear == null) return undefined;
+  return `#${pad2(ctdop.period)}-${pad2(ctdop.refMonth)}/${ctdop.refYear}`;
+};
+
+/** Identificação do documento como na planilha: sigla do consórcio + número (ex.: `AS28780`). */
+export const docRegistration = (corporationAcronym: string | undefined, docNumber: string) =>
+  corporationAcronym ? `${corporationAcronym}${docNumber}` : docNumber;
 
 export class PenaltyViewService {
 
@@ -22,7 +36,9 @@ export class PenaltyViewService {
           { model: MotiveModel, as: 'Motive', where: { activated: true }, required: false }
         ]},
         { model: CTDOPModel, as: 'CTDOP', where: { activated: true }, required: false },
-        { model: AppealModel, as: 'Appeal', where: { activated: true }, required: false } // LEFT JOIN
+        { model: AppealModel, as: 'Appeal', where: { activated: true }, required: false, include: [ // LEFT JOIN
+          { model: ProtocolModel, as: 'Protocol', required: false }
+        ]}
       ],
       // Adicione limitações (limit/offset) aqui futuramente para paginação
     });
@@ -62,8 +78,10 @@ export class PenaltyViewService {
       return {
         // Dados do PenaltyDoc (Conector)
         docId: doc.penaltyDocId,
-        docRegistration: doc.penaltyDocRegistration,
+        docRegistration: docRegistration(extCompany?.Corporation?.corporationAcronym, doc.penaltyDocNumber),
         docType: doc.penaltyDocType,
+        docNumber: doc.penaltyDocNumber,
+        docStatus: doc.penaltyDocStatus,
 
         // Dados do PenaltyInfo (Evento) + Dados Externos Resolvidos
         fkCompanyId: info?.fkCompanyId,
@@ -92,14 +110,15 @@ export class PenaltyViewService {
         motive: info?.Motive?.motiveName,
         
         internalAnnotation: info?.internalAnnotation,
-        penaltyStatus: info?.penaltyInfoStatus,
+        penaltyStatus: doc.penaltyDocStatus,
 
         // Dados do CTDOP (Documento)
         ctdopNumber: ctdop?.ctdopNumber,
-        ctdopPeriod: ctdop?.period,
+        ctdopPeriod: ctdop?.period != null ? String(ctdop.period) : undefined,
+        ctdopLabel: ctdopLabel(ctdop),
 
         // Dados do Appeal (Recurso)
-        appealProtocol: appeal?.protocolNumber,
+        appealProtocol: appeal?.Protocol?.protocolNumber,
         appealStatus: appeal?.response
       };
     });

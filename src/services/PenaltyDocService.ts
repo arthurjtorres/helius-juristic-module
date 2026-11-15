@@ -1,23 +1,57 @@
-import { ModelStatic } from "sequelize";
-import PenaltyDocModel from "../database/models/PenaltyDocModel";
+import { AppealModel, CTDOPModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
 import PenaltyDocInterface from "../database/interfaces/PenaltyDocInterface";
+import { PenaltyStatusEnum } from "../database/models/enums/PenaltyStatusEnum";
 import Response from "../utils/Response";
-import { AppealModel, CTDOPModel, PenaltyInfoModel } from "../database/models";
+import { isUniqueViolation, uniqueConflict } from "../utils/conflict";
+import { checkCtdopForDoc, checkDocNumber } from "./penaltyRules";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 
-class PenaltyDocService {
-  private model: ModelStatic<PenaltyDocModel> = PenaltyDocModel;
+const appealInclude = {
+  model: AppealModel, as: "Appeal", where: { activated: true }, required: false,
+  include: [{ model: ProtocolModel, as: "Protocol", required: false }],
+};
 
+class PenaltyDocService {
+  private model = PenaltyDocModel;
+
+  /**
+   * Cadastra um documento num fato existente (ex.: o auto de infração da notificação).
+   * O consórcio é copiado do fato. Um documento de cada tipo por fato; número único por consórcio e tipo.
+   */
   async createPenaltyDoc(data: PenaltyDocInterface) {
     data.createdAt = new Date();
     const { error } = CreateValidationSchema.PenaltyDocValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    await this.model.create({ ...data });
-    return Response.created("Documento de penalidade criado com sucesso!");
+    const info = await PenaltyInfoModel.findOne({ where: { penaltyInfoId: data.fkPenaltyInfoId, activated: true } });
+    if (!info) return Response.badRequest("Penalidade não encontrada ou inativa.");
+
+    const sameType = await this.model.findOne({
+      where: { fkPenaltyInfoId: data.fkPenaltyInfoId, penaltyDocType: data.penaltyDocType },
+    });
+    if (sameType) {
+      return uniqueConflict(`${data.penaltyDocType} desta penalidade`, sameType, sameType.penaltyDocId, 'penalty-doc');
+    }
+
+    const invalid = await checkCtdopForDoc(data.fkCtdopId, data.penaltyDocType)
+      ?? await checkDocNumber(info.fkCorporationId, data.penaltyDocType, data.penaltyDocNumber);
+    if (invalid) return invalid;
+
+    try {
+      const doc = await this.model.create({
+        ...data,
+        penaltyDocStatus: data.penaltyDocStatus ?? PenaltyStatusEnum.EM_ANALISE,
+        fkCorporationId: info.fkCorporationId,
+      });
+      return Response.created("Documento de penalidade criado com sucesso!", { penaltyDocId: doc.penaltyDocId });
+    } catch (err) {
+      if (isUniqueViolation(err)) return Response.conflict("Documento já cadastrado para este fato ou consórcio.");
+      throw err;
+    }
   }
 
+  /** Atualiza número, CTDOP, status (enum) e anotação. Tipo e fato não mudam. */
   async updatePenaltyDoc(id: string, data: Partial<PenaltyDocInterface>) {
     if (!id) return Response.badRequest("ID não informado");
     data.updatedAt = new Date();
@@ -25,10 +59,23 @@ class PenaltyDocService {
     const { error } = UpdateValidationSchema.UpdatePenaltyDocValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    const [updated] = await this.model.update(data, { where: { penaltyDocId: id, activated: true } });
-    if (!updated) return Response.notFound("Documento de penalidade não encontrado!");
+    const record = await this.model.findOne({ where: { penaltyDocId: id, activated: true } });
+    if (!record) return Response.notFound("Documento de penalidade não encontrado!");
 
-    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true } });
+    const invalid = (data.fkCtdopId ? await checkCtdopForDoc(data.fkCtdopId, record.penaltyDocType) : null)
+      ?? (data.penaltyDocNumber
+        ? await checkDocNumber(record.fkCorporationId, record.penaltyDocType, data.penaltyDocNumber, id)
+        : null);
+    if (invalid) return invalid;
+
+    try {
+      await this.model.update(data, { where: { penaltyDocId: id, activated: true } });
+    } catch (err) {
+      if (isUniqueViolation(err)) return Response.conflict("Número de documento já usado neste consórcio.");
+      throw err;
+    }
+
+    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true }, include: [appealInclude] });
     return Response.ok("Documento de penalidade atualizado com sucesso!", result);
   }
 
@@ -81,26 +128,20 @@ class PenaltyDocService {
   }
 
   async getPenaltyDoc(id: string) {
-    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true } });
+    const result = await this.model.findOne({ where: { penaltyDocId: id, activated: true }, include: [appealInclude] });
     if (!result) return Response.notFound("Documento de penalidade não encontrado!");
 
     return Response.ok("Documento de penalidade encontrado!", result);
   }
 
-  async findPenaltyDocs(query: {
-    penaltyDocType?: string;
-    penaltyDocNumber?: string;
-    fkCtdopId?: string;
-    fkPenaltyInfoId?: string;
-  }) {
+  async findPenaltyDocs(query: Record<string, any>) {
     const where: any = { activated: true };
+    const filterKeys = ['penaltyDocType', 'penaltyDocNumber', 'penaltyDocStatus', 'fkCtdopId', 'fkPenaltyInfoId', 'fkCorporationId'];
+    for (const key of filterKeys) {
+      if (typeof query[key] === "string" && query[key]) where[key] = query[key];
+    }
 
-    if (query.penaltyDocType) where.penaltyDocType = query.penaltyDocType;
-    if (query.penaltyDocNumber) where.penaltyDocNumber = query.penaltyDocNumber;
-    if (query.fkCtdopId) where.fkCtdopId = query.fkCtdopId;
-    if (query.fkPenaltyInfoId) where.fkPenaltyInfoId = query.fkPenaltyInfoId;
-
-    const result = await this.model.findAll({ where });
+    const result = await this.model.findAll({ where, include: [appealInclude] });
 
     if (!result.length) return Response.notFound("Nenhum documento de penalidade encontrado.");
     return Response.ok("Documentos de penalidade encontrados com sucesso!", result);
