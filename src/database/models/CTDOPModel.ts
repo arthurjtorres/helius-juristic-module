@@ -1,17 +1,20 @@
 import { DataTypes, Model } from "sequelize";
 import db from "./database";
 import sequelize from "sequelize";
-import { DocTypeEnum } from "./enums/DocTypeEnum";
+import { CtdopTypeEnum } from "./enums/CtdopTypeEnum";
 
+/** Carta do órgão regulador: notificações, autos de infração ou resposta de recurso. */
 class CTDOPModel extends Model {
   declare ctdopId: string;
-  declare ctdopNumber: string;
-  declare receiveDate?: string;
-  declare docType: DocTypeEnum;
-  declare responseDate?: string;
-  declare refMonth: string;
-  declare period: string;
-  declare refYear: number;
+  /** Nulo até o número chegar por e-mail; a carta é identificada por decêndio, mês e ano. */
+  declare ctdopNumber: string | null;
+  declare receiveDate: string | null;
+  declare docType: CtdopTypeEnum;
+  /** Prazo de resposta (antes `response_date`). */
+  declare responseDeadline: string | null;
+  declare refMonth: number | null;
+  declare period: number | null;
+  declare refYear: number | null;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -29,7 +32,7 @@ CTDOPModel.init({
   },
   ctdopNumber: {
     type: sequelize.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true
   },
   receiveDate: {
@@ -39,23 +42,23 @@ CTDOPModel.init({
     type: sequelize.STRING,
     allowNull: false,
     validate: {
-      isIn: [[...Object.values(DocTypeEnum)]],
+      isIn: [[...Object.values(CtdopTypeEnum)]],
     },
   },
-  responseDate: {
+  responseDeadline: {
     type: sequelize.DATEONLY
   },
   refMonth: {
-    type: sequelize.STRING,
-    allowNull: false
+    type: sequelize.SMALLINT,
+    allowNull: true
   },
   period: {
-    type: sequelize.STRING,
-    allowNull: false
+    type: sequelize.SMALLINT,
+    allowNull: true
   },
   refYear: {
     type: sequelize.SMALLINT,
-    allowNull: false
+    allowNull: true
   },
 
   createdAt: {

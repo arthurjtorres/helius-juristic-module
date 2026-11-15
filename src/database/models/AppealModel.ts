@@ -1,17 +1,18 @@
 import { DataTypes, Model } from "sequelize";
 import db from "./database";
 import sequelize from "sequelize";
-import { DocTypeEnum } from "./enums/DocTypeEnum";
+import { AppealResponseEnum } from "./enums/AppealResponseEnum";
 
+/**
+ * Recurso de um documento de penalidade, dentro de um protocolo. Um recurso por documento.
+ * A resposta exige a CTDOP de resposta, cuja data de chegada é a data da resposta.
+ */
 class AppealModel extends Model {
   declare appealId: string;
-  declare appealType: DocTypeEnum;
-  declare protocolNumber: string;
-  declare protocolDate: string;
-  declare response?: string;
-  declare responseDate?: string;
-  declare responseCtdop?: string;
+  declare fkProtocolId: string;
   declare fkPenaltyDocId: string;
+  declare response: AppealResponseEnum | null;
+  declare fkResponseCtdopId: string | null;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -27,37 +28,36 @@ AppealModel.init({
     defaultValue: DataTypes.UUIDV4,
     allowNull: false
   },
-  appealType: {
-    type: sequelize.STRING,
+  fkProtocolId: {
+    type: DataTypes.UUID,
     allowNull: false,
-    validate: {
-      isIn: [[...Object.values(DocTypeEnum)]],
-    },
-  },
-  protocolNumber: {
-    type: sequelize.STRING,
-    allowNull: false,
-    unique: true
-  },
-  protocolDate: {
-    type: sequelize.DATEONLY,
-    allowNull: false
-  },
-  response: {
-    type: sequelize.STRING
-  },
-  responseDate: {
-    type: sequelize.STRING
-  },
-  responseCtdop: {
-    type: sequelize.STRING
+    references: {
+      model: 'protocol',
+      key: 'protocol_id'
+    }
   },
   fkPenaltyDocId: {
     type: DataTypes.UUID,
     allowNull: false,
+    unique: true,
     references: {
       model: 'penalty_doc',
       key: 'penalty_doc_id'
+    }
+  },
+  response: {
+    type: sequelize.STRING,
+    allowNull: true,
+    validate: {
+      isIn: [[...Object.values(AppealResponseEnum)]],
+    },
+  },
+  fkResponseCtdopId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'ctdop',
+      key: 'ctdop_id'
     }
   },
 

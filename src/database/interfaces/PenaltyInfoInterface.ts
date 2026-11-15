@@ -1,19 +1,17 @@
-import { PenaltyStatusEnum } from "../models/enums/PenaltyStatusEnum"; 
-
 export default interface PenaltyInfoInterface {
-  penaltyId?: string;
+  penaltyInfoId?: string;
   fkCompanyId: string;
-  fkVehicleId: string;
-  fkBusTimetableId: string;
+  fkCorporationId?: string;
+  fkVehicleId?: string | null;
+  fkBusTimetableId?: string | null;
   date: string;
   time: string;
-  fkAgentId: string;
-  fkFineCodeId: string;
-  fkLocationId: string;
-  agentAnnotation?: string;
-  penaltyStatus: PenaltyStatusEnum;
-  fkMotiveId: string;
-  internalAnnotation?: string;
+  fkAgentId?: string | null;
+  fkFineCodeId?: string | null;
+  fkLocationId?: string | null;
+  agentAnnotation?: string | null;
+  fkMotiveId?: string | null;
+  internalAnnotation?: string | null;
 
   createdAt: Date;
   createdBy: string;

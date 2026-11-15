@@ -2,8 +2,10 @@ export default interface PenaltyCompositeView {
   
   // Dados do PenaltyDoc (O Conector)
   docId: string;
-  docRegistration?: string; // ex: AS28780
+  docRegistration?: string; // sigla do consórcio + número, ex: AS28780
   docType?: string;
+  docNumber?: string;       // número do documento, sem o consórcio
+  docStatus?: string;       // status do documento (o mesmo valor de penaltyStatus)
 
   // Dados do PenaltyInfo (O Evento)
   fkCompanyId?: string;     // fkCompanyId
@@ -35,8 +37,9 @@ export default interface PenaltyCompositeView {
   penaltyStatus?: string;
   
   // Dados do CTDOP (O Documento de Lote)
-  ctdopNumber?: string;
+  ctdopNumber?: string | null;
   ctdopPeriod?: string; // decêndio (1|2|3)
+  ctdopLabel?: string;  // número da carta ou, enquanto ele não chega, "#decêndio-mês/ano"
   
   // Dados do Appeal (O Recurso - opcional, pois pode ser null)
   appealProtocol?: string;

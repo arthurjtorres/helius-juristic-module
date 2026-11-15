@@ -2,6 +2,7 @@ import { ModelStatic, Op } from "sequelize";
 import AgentModel from "../database/models/AgentModel";
 import AgentInterface from "../database/interfaces/AgentInterface";
 import Response from "../utils/Response";
+import { uniqueConflict } from "../utils/conflict";
 import { PenaltyInfoModel } from "../database/models";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
@@ -9,11 +10,23 @@ import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 class AgentService {
   private model: ModelStatic<AgentModel> = AgentModel;
 
+  /** Cada agente tem um único código. */
+  private async findUniqueConflict(agentCode?: string, excludeId?: string) {
+    if (!agentCode) return null;
+    const where: any = { agentCode };
+    if (excludeId) where.agentId = { [Op.ne]: excludeId };
+    const existing = await this.model.findOne({ where });
+    return existing ? uniqueConflict("Código do agente", existing, existing.agentId, 'agent') : null;
+  }
+
   async createAgent(data: AgentInterface) {
     data.createdAt = new Date();
     const { error } = CreateValidationSchema.AgentValidation.validate(data);
 
     if (error) return Response.badRequest(error.message);
+
+    const conflict = await this.findUniqueConflict(data.agentCode);
+    if (conflict) return conflict;
 
     await this.model.create({ ...data });
     return Response.created("Agente criado com sucesso!");
@@ -25,6 +38,9 @@ class AgentService {
 
     const { error } = UpdateValidationSchema.UpdateAgentValidation.validate(data);
     if (error) return Response.badRequest(error.message);
+
+    const conflict = await this.findUniqueConflict(data.agentCode, id);
+    if (conflict) return conflict;
 
     const [updated] = await this.model.update(data, {
       where: { agentId: id, activated: true },

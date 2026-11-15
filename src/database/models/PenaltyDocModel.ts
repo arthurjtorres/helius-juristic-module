@@ -2,14 +2,22 @@ import { DataTypes, Model } from "sequelize";
 import db from "./database";
 import sequelize from "sequelize";
 import { DocTypeEnum } from "./enums/DocTypeEnum";
+import { PenaltyStatusEnum } from "./enums/PenaltyStatusEnum";
 
+/**
+ * Notificação ou auto de infração de um fato (`penalty_info`), numa CTDOP.
+ * Únicos no banco: um documento de cada tipo por fato; (consórcio, tipo, número).
+ * A FK `(fk_penalty_info_id, fk_corporation_id)` garante o mesmo consórcio do fato.
+ */
 class PenaltyDocModel extends Model {
   declare penaltyDocId: string;
   declare penaltyDocType: DocTypeEnum;
-  declare penaltyDocRegistration: string;
   declare penaltyDocNumber: string;
   declare fkCtdopId: string;
   declare fkPenaltyInfoId: string;
+  declare fkCorporationId: string;
+  declare penaltyDocStatus: PenaltyStatusEnum;
+  declare penaltyDocAnnotation: string | null;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -33,11 +41,6 @@ PenaltyDocModel.init({
       isIn: [[...Object.values(DocTypeEnum)]],
     },
   },
-  // Identificação disponível para o usuário (Registro da notificação AS321 || parelelo a ID REF NOTIF)
-  penaltyDocRegistration: {
-    type: sequelize.STRING,
-    allowNull: false,
-  },
   // Número da notificação crua 321
   penaltyDocNumber: {
     type: sequelize.STRING,
@@ -53,15 +56,26 @@ PenaltyDocModel.init({
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   },
+  // FK composta (fk_penalty_info_id, fk_corporation_id) no banco; aqui só a coluna
   fkPenaltyInfoId: {
     type: DataTypes.UUID,
     allowNull: false,
-    references: {
-      model: 'penalty_info',
-      key: 'penalty_info_id',
+  },
+  fkCorporationId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  penaltyDocStatus: {
+    type: sequelize.STRING,
+    allowNull: false,
+    defaultValue: PenaltyStatusEnum.EM_ANALISE,
+    validate: {
+      isIn: [[...Object.values(PenaltyStatusEnum)]],
     },
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
+  },
+  penaltyDocAnnotation: {
+    type: sequelize.STRING,
+    allowNull: true,
   },
 
   createdAt: {

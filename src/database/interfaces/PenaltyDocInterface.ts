@@ -1,13 +1,15 @@
 import { DocTypeEnum } from "../models/enums/DocTypeEnum";
+import { PenaltyStatusEnum } from "../models/enums/PenaltyStatusEnum";
 
 export default interface PenaltyDocInterface {
   penaltyDocId?: string;
   penaltyDocType: DocTypeEnum;
-  penaltyDocRegistration: string;
   penaltyDocNumber: string;
   fkCtdopId: string;
-  fkAppealId: string;
   fkPenaltyInfoId: string;
+  fkCorporationId?: string;
+  penaltyDocStatus?: PenaltyStatusEnum;
+  penaltyDocAnnotation?: string | null;
 
   createdAt: Date;
   createdBy: string;

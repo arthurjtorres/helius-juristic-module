@@ -2,6 +2,7 @@ import { ModelStatic, Op } from "sequelize";
 import FineCodeModel from "../database/models/FineCodeModel";
 import FineCodeInterface from "../database/interfaces/FineCodeInterface";
 import Response from "../utils/Response";
+import { isUniqueViolation, uniqueConflict } from "../utils/conflict";
 import { PenaltyInfoModel } from "../database/models";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
@@ -9,12 +10,30 @@ import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 class FineCodeService {
   private model: ModelStatic<FineCodeModel> = FineCodeModel;
 
+  /** `fineNumber` é único; sem ele, o banco usa o próximo da sequência. */
+  private async findUniqueConflict(fineNumber?: string, excludeId?: string) {
+    if (!fineNumber) return null;
+    const where: any = { fineNumber };
+    if (excludeId) where.fineCodeId = { [Op.ne]: excludeId };
+    const existing = await this.model.findOne({ where });
+    return existing ? uniqueConflict("Número do código de infração", existing, existing.fineCodeId, 'fine-code') : null;
+  }
+
   async createFineCode(data: FineCodeInterface) {
     data.createdAt = new Date();
-    const { error } = CreateValidationSchema.FineCodeValidation.validate(data);
+    const { error } = CreateValidationSchema.FineCodeValidation.validate(data, { convert: true });
     if (error) return Response.badRequest(error.message);
 
-    await this.model.create({ ...data });
+    const conflict = await this.findUniqueConflict(data.fineNumber);
+    if (conflict) return conflict;
+
+    try {
+      await this.model.create({ ...data, fineKm: Number(data.fineKm) });
+    } catch (err) {
+      // A sequência pode gerar um número já usado (código cadastrado com número informado).
+      if (isUniqueViolation(err)) return Response.conflict("O número gerado para o código já existe; informe o número (fineNumber).");
+      throw err;
+    }
     return Response.created("Código de infração criado com sucesso!");
   }
 
@@ -24,6 +43,10 @@ class FineCodeService {
 
     const { error } = UpdateValidationSchema.UpdateFineCodeValidation.validate(data);
     if (error) return Response.badRequest(error.message);
+
+    const conflict = await this.findUniqueConflict(data.fineNumber, id);
+    if (conflict) return conflict;
+    if (data.fineKm !== undefined) data.fineKm = Number(data.fineKm);
 
     const [updated] = await this.model.update(data, {
       where: { fineCodeId: id, activated: true },
