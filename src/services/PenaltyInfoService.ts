@@ -1,49 +1,86 @@
-import { ModelStatic, Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import PenaltyInfoModel from "../database/models/PenaltyInfoModel";
-import PenaltyDocModel from "../database/models/PenaltyDocModel";
-import AppealModel from "../database/models/AppealModel";
+import db from "../database/models/database";
+import { AnalysisModel, AppealModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
 import PenaltyInfoInterface from "../database/interfaces/PenaltyInfoInterface";
-import { DocTypeEnum } from "../database/models/enums/DocTypeEnum";
+import PenaltyDocInterface from "../database/interfaces/PenaltyDocInterface";
+import { PenaltyStatusEnum } from "../database/models/enums/PenaltyStatusEnum";
 import { buildPenaltyInfoView } from "./integrations/PenaltyInfoAggregator";
+import { getCompanyCorporationId } from "./integrations/integrationService";
 import Response from "../utils/Response";
-import { AgentModel, AnalysisModel, FineCodeModel, MotiveModel } from "../database/models";
+import { isUniqueViolation } from "../utils/conflict";
+import { checkCtdopForDoc, checkDocNumber, checkPenaltyParents } from "./penaltyRules";
 import CreateValidationSchema from "./validations/CreateValidationSchema";
 import UpdateValidationSchema from "./validations/UpdateValidationSchema";
 
-class PenaltyInfoService {
-  private model: ModelStatic<PenaltyInfoModel> = PenaltyInfoModel;
+type PenaltyCreate = PenaltyInfoInterface & {
+  doc: Omit<PenaltyDocInterface, 'fkPenaltyInfoId' | 'createdAt' | 'createdBy'>;
+};
 
-  async createPenalty(data: PenaltyInfoInterface & {
-    docType: DocTypeEnum;
-    penaltyDocRegistration: string; //AS13250
-    penaltyDocNumber: string;       //13250
-    fkCtdopId: string;              //Id da Ctdop
-  }) {
-    
+/** Documentos ativos do fato, com recurso e protocolo. */
+const docsInclude = [
+  { model: PenaltyDocModel, as: "PenaltyDocs", where: { activated: true }, required: false, include: [
+    { model: AppealModel, as: "Appeal", where: { activated: true }, required: false, include: [
+      { model: ProtocolModel, as: "Protocol", required: false },
+    ]},
+  ]},
+];
+
+const NO_COMPANY = "Empresa não encontrada ou inativa no cadastro.";
+
+class PenaltyInfoService {
+  private model = PenaltyInfoModel;
+
+  /**
+   * Cria o fato e o seu primeiro documento numa transação: falha em qualquer um não grava nada.
+   * O consórcio vem da empresa (`registry`); a CTDOP precisa ser do tipo do documento;
+   * o número do documento é único por consórcio e tipo. Autoria do token nos dois registros.
+   *
+   * @param data Campos do fato, com o documento em `doc`, e `createdBy` do token.
+   */
+  async createPenalty(data: PenaltyCreate) {
     data.createdAt = new Date();
-    const { error } = CreateValidationSchema.PenaltyInfoValidation.validate(data);
+    const { error } = CreateValidationSchema.PenaltyCreateValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
+    const { doc, ...info } = data;
+
+    const fkCorporationId = await getCompanyCorporationId(info.fkCompanyId);
+    if (!fkCorporationId) return Response.badRequest(NO_COMPANY);
+
+    const invalid = await checkPenaltyParents(info)
+      ?? await checkCtdopForDoc(doc.fkCtdopId, doc.penaltyDocType)
+      ?? await checkDocNumber(fkCorporationId, doc.penaltyDocType, doc.penaltyDocNumber);
+    if (invalid) return invalid;
+
     const penaltyInfoId = uuidv4();
+    const penaltyDocId = uuidv4();
+    const audit = { createdBy: info.createdBy, createdAt: info.createdAt };
 
-    await this.model.create({
-      penaltyInfoId,
-      ...data,
-    });
+    const transaction = await db.transaction();
+    try {
+      await this.model.create({ ...info, penaltyInfoId, fkCorporationId, ...audit }, { transaction });
+      await PenaltyDocModel.create({
+        ...doc,
+        penaltyDocId,
+        penaltyDocStatus: doc.penaltyDocStatus ?? PenaltyStatusEnum.EM_ANALISE,
+        fkPenaltyInfoId: penaltyInfoId,
+        fkCorporationId,
+        ...audit,
+      }, { transaction });
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      if (isUniqueViolation(err)) return Response.conflict("Documento já cadastrado para este fato ou consórcio.");
+      throw err;
+    }
 
-    await PenaltyDocModel.create({
-      penaltyDocId: uuidv4(),
-      penaltyDocType: data.docType,
-      penaltyDocRegistration: data.penaltyDocRegistration,
-      penaltyDocNumber: data.penaltyDocNumber,
-      fkCtdopId: data.fkCtdopId,
-      fkPenaltyInfoId: penaltyInfoId,
-    });
-
-    return Response.created("Penalidade e documento criados com sucesso!");
+    return Response.created("Penalidade e documento criados com sucesso!", { penaltyInfoId, penaltyDocId });
   }
 
+  /**
+   * Atualiza o fato. Trocar a empresa recalcula o consórcio; o banco o propaga aos documentos
+   * (`ON UPDATE CASCADE`) e recusa (409) se algum número colidir no consórcio novo.
+   */
   async updatePenalty(id: string, data: Partial<PenaltyInfoInterface>) {
     if (!id) return Response.badRequest("ID não informado");
     data.updatedAt = new Date();
@@ -51,18 +88,29 @@ class PenaltyInfoService {
     const { error } = UpdateValidationSchema.UpdatePenaltyInfoValidation.validate(data);
     if (error) return Response.badRequest(error.message);
 
-    const [updated] = await this.model.update(data, { where: { penaltyInfoId: id, activated: true } });
-    if (!updated) return Response.notFound("Penalidade não encontrada!");
+    const record = await this.model.findOne({ where: { penaltyInfoId: id, activated: true } });
+    if (!record) return Response.notFound("Penalidade não encontrada!");
 
-    const result = await this.model.findOne({
-      where: { penaltyInfoId: id, activated: true },
-      include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
-          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
-        ]},
-      ]
-    });
+    const invalid = await checkPenaltyParents(data);
+    if (invalid) return invalid;
 
+    const changes: Partial<PenaltyInfoInterface> = { ...data };
+    if (data.fkCompanyId && data.fkCompanyId !== record.fkCompanyId) {
+      const fkCorporationId = await getCompanyCorporationId(data.fkCompanyId);
+      if (!fkCorporationId) return Response.badRequest(NO_COMPANY);
+      changes.fkCorporationId = fkCorporationId;
+    }
+
+    try {
+      await this.model.update(changes, { where: { penaltyInfoId: id, activated: true } });
+    } catch (err) {
+      if (isUniqueViolation(err)) {
+        return Response.conflict("Um documento deste fato já tem o mesmo número no consórcio da nova empresa.");
+      }
+      throw err;
+    }
+
+    const result = await this.model.findOne({ where: { penaltyInfoId: id, activated: true }, include: docsInclude });
     return Response.ok("Penalidade atualizada com sucesso!", result);
   }
 
@@ -95,7 +143,7 @@ class PenaltyInfoService {
 
   /**
    * Reativa um registro desativado (`activated = true`).
-   * Responde 409 se um registro pai estiver inativo.
+   * Responde 409 se agente, código ou motivo informados estiverem inativos.
    *
    * @param id Identificador do registro.
    * @param updatedBy Usuário autenticado que executa a operação.
@@ -106,15 +154,8 @@ class PenaltyInfoService {
     const record = await this.model.findOne({ where: { penaltyInfoId: id, activated: false } });
     if (!record) return Response.notFound("Penalidade não encontrada ou já ativa!");
 
-    if (!(await AgentModel.count({ where: { agentId: record.fkAgentId, activated: true } }))) {
-      return Response.conflict("Não é possível reativar: o agente está inativo.");
-    }
-    if (!(await FineCodeModel.count({ where: { fineCodeId: record.fkFineCodeId, activated: true } }))) {
-      return Response.conflict("Não é possível reativar: o código de infração está inativo.");
-    }
-    if (!(await MotiveModel.count({ where: { motiveId: record.fkMotiveId, activated: true } }))) {
-      return Response.conflict("Não é possível reativar: o motivo está inativo.");
-    }
+    const inactiveParent = await checkPenaltyParents(record);
+    if (inactiveParent) return Response.conflict(`Não é possível reativar: ${inactiveParent.message}`);
 
     await record.update({ activated: true, updatedBy, updatedAt: new Date() });
 
@@ -122,15 +163,7 @@ class PenaltyInfoService {
   }
 
   async getPenalty(id: string) {
-    const penalty = await this.model.findOne({
-      where: { penaltyInfoId: id, activated: true },
-      include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
-          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
-        ]},
-      ],
-    });
-
+    const penalty = await this.model.findOne({ where: { penaltyInfoId: id, activated: true }, include: docsInclude });
     if (!penalty) return Response.notFound("Penalidade não encontrada!");
 
     const result = await buildPenaltyInfoView(penalty);
@@ -138,40 +171,25 @@ class PenaltyInfoService {
   }
 
   /**
-   * Busca penalidades por filtros locais. Empresa, veículo, itinerário e local
-   * são filtrados pelas colunas `fk*Id` de `penalty_info`, sem consultar outros módulos.
-   *
-   * @param query Filtros opcionais (todos por igualdade, exceto quando indicado).
+   * Busca penalidades por filtros locais (igualdade), sem consultar outros módulos.
+   * `penaltyDocStatus` filtra pelos documentos e traz só os fatos com documento nesse status.
    */
-  async findPenalties(query: {
-    fkCompanyId?: string;
-    fkVehicleId?: string;
-    fkBusTimetableId?: string;
-    fkLocationId?: string;
-    fkAgentId?: string;
-    fkFineCodeId?: string;
-    fkMotiveId?: string;
-    date?: string;
-    penaltyInfoStatus?: string;
-  }) {
+  async findPenalties(query: Record<string, any>) {
     const where: Record<string, string | boolean> = { activated: true };
 
     const filterKeys = [
-      'fkCompanyId', 'fkVehicleId', 'fkBusTimetableId', 'fkLocationId',
-      'fkAgentId', 'fkFineCodeId', 'fkMotiveId', 'date', 'penaltyInfoStatus',
-    ] as const;
+      'fkCompanyId', 'fkCorporationId', 'fkVehicleId', 'fkBusTimetableId', 'fkLocationId',
+      'fkAgentId', 'fkFineCodeId', 'fkMotiveId', 'date',
+    ];
     for (const key of filterKeys) {
-      if (query[key]) where[key] = query[key];
+      if (typeof query[key] === "string" && query[key]) where[key] = query[key];
     }
 
-    const results = await this.model.findAll({
-      where,
-      include: [
-        { model: PenaltyDocModel, as: "PenaltyDoc", where: { activated: true }, required: false, include: [
-          { model: AppealModel, as: "Appeal", where: { activated: true }, required: false }
-        ]},
-      ],
-    });
+    const include = typeof query.penaltyDocStatus === "string" && query.penaltyDocStatus
+      ? [{ ...docsInclude[0], where: { activated: true, penaltyDocStatus: query.penaltyDocStatus }, required: true }]
+      : docsInclude;
+
+    const results = await this.model.findAll({ where, include });
 
     if (!results.length) return Response.notFound("Nenhuma penalidade encontrada com os filtros fornecidos.");
     return Response.ok("Penalidades encontradas com sucesso!", results);
