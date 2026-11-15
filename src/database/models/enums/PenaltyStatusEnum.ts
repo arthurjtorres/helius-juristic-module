@@ -1,7 +1,13 @@
+/**
+ * Status de cada documento de penalidade (notificação ou auto), como na planilha do Jurídico.
+ * O usuário escolhe ao editar; RECORRIDO, DEFERIDO e INDEFERIDO também são gravados pelo sistema
+ * nos eventos do recurso (cadastro, resposta, desativação).
+ */
 export enum PenaltyStatusEnum {
-  ANALISE_1 = 'EM ANÁLISE - NOTIFICAÇÃO',
-  ANALISE_2= 'EM ANÁLISE - AUTO',
+  EM_ANALISE = 'EM ANÁLISE',
+  ELABORANDO = 'ELABORANDO',
+  RECORRIDO = 'RECORRIDO',
   DEFERIDO = 'DEFERIDO',
-  INDEFERIDO_1 = 'INDEFERIDO - RECURSO DE NOTIFICAÇÃO',
-  INDEFERIDO_2 = 'INDEFERIDO - REURSO DO AUTO',
+  INDEFERIDO = 'INDEFERIDO',
+  SEM_RECURSO = 'SEM RECURSO',
 }

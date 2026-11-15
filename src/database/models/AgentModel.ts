@@ -23,6 +23,7 @@ AgentModel.init({
   agentCode: {
     type: sequelize.STRING,
     allowNull: false,
+    unique: true,
   },
 
   createdAt: {
