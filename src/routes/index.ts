@@ -3,6 +3,7 @@ import fineCodeRouter from "./FineCodeRouter";
 import motiveRouter from "./MotiveRouter";
 import agentRouter from "./AgentRouter";
 import appealRouter from "./AppealRouter";
+import protocolRouter from "./ProtocolRouter";
 import ctdopRouter from "./CtdopRouter";
 import penaltyInfoRouter from "./PenaltyInfoRouter";
 import penaltyDocRouter from "./PenaltyDocRouter";
@@ -15,6 +16,7 @@ router.use("/agent", agentRouter)
 router.use("/fine-code", fineCodeRouter);
 router.use("/motive", motiveRouter);
 router.use("/appeal", appealRouter);
+router.use("/protocol", protocolRouter);
 router.use("/ctdop", ctdopRouter);
 router.use("/penalty-info", penaltyInfoRouter);
 router.use("/penalty-doc", penaltyDocRouter);
