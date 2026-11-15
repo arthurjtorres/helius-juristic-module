@@ -9,6 +9,7 @@ import CTDOPModel from "./CTDOPModel";
 import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
+import ProtocolModel from "./ProtocolModel";
 
 setupAssociations();
 
@@ -21,5 +22,6 @@ export {
   CTDOPModel,
   FineCodeModel,
   MotiveModel,
-  PenaltyDocModel
+  PenaltyDocModel,
+  ProtocolModel
 };

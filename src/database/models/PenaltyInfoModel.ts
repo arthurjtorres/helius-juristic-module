@@ -1,22 +1,27 @@
 import { DataTypes, Model } from "sequelize";
 import db from "./database";
-import { PenaltyStatusEnum } from "./enums/PenaltyStatusEnum";
 import sequelize from "sequelize";
 
+/**
+ * O fato da penalidade (veículo, data, hora, agente, local). Notificação e auto do mesmo fato
+ * ficam em `penalty_doc`. Empresa, consórcio, veículo, linha e local são referências a outros
+ * módulos, sem FK no banco.
+ */
 class PenaltyInfoModel extends Model {
   declare penaltyInfoId: string;
   declare fkCompanyId: string;
-  declare fkVehicleId: string;
-  declare fkBusTimetableId: string;
+  /** Consórcio da empresa (`registry.corporation`), gravado a partir do `registry`. */
+  declare fkCorporationId: string;
+  declare fkVehicleId: string | null;
+  declare fkBusTimetableId: string | null;
   declare date: string;
   declare time: string;
-  declare fkAgentId: string;
-  declare fkFineCodeId: string;
-  declare fkLocationId: string;
-  declare agentAnnotation?: string;
-  declare penaltyInfoStatus: PenaltyStatusEnum;
-  declare fkMotiveId: string;
-  declare internalAnnotation?: string;
+  declare fkAgentId: string | null;
+  declare fkFineCodeId: string | null;
+  declare fkLocationId: string | null;
+  declare agentAnnotation: string | null;
+  declare fkMotiveId: string | null;
+  declare internalAnnotation: string | null;
 
   declare createdAt: Date;
   declare createdBy: string;
@@ -37,14 +42,18 @@ PenaltyInfoModel.init({
     allowNull: false,
 
   },
-  fkVehicleId: {
+  fkCorporationId: {
     type: DataTypes.UUID,
     allowNull: false,
+  },
+  fkVehicleId: {
+    type: DataTypes.UUID,
+    allowNull: true,
 
   },
   fkBusTimetableId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
   },
   date: {
     type: sequelize.DATEONLY,
@@ -56,7 +65,7 @@ PenaltyInfoModel.init({
   },
   fkAgentId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'agent',
       key: 'agent_id',
@@ -66,7 +75,7 @@ PenaltyInfoModel.init({
   },
   fkFineCodeId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'fine_code',
       key: 'fine_code_id',
@@ -76,23 +85,16 @@ PenaltyInfoModel.init({
   },
   fkLocationId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
 
   },
   agentAnnotation: {
     type: sequelize.STRING,
     allowNull: true,
   },
-  penaltyInfoStatus: {
-    type: sequelize.STRING,
-    allowNull: false,
-    validate: {
-      isIn: [[...Object.values(PenaltyStatusEnum)]],
-    }
-  },
   fkMotiveId: {
     type: DataTypes.UUID,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'motive',
       key: 'motive_id',

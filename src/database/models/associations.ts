@@ -6,6 +6,7 @@ import CTDOPModel from "./CTDOPModel";
 import FineCodeModel from "./FineCodeModel";
 import MotiveModel from "./MotiveModel";
 import PenaltyDocModel from "./PenaltyDocModel";
+import ProtocolModel from "./ProtocolModel";
 
 
 export const setupAssociations = () => {
@@ -31,11 +32,36 @@ AppealModel.belongsTo(PenaltyDocModel, {
   as: 'PenaltyDoc'
 });
 
+AppealModel.belongsTo(ProtocolModel, {
+  foreignKey: 'fkProtocolId',
+  targetKey: 'protocolId',
+  as: 'Protocol'
+});
+
+AppealModel.belongsTo(CTDOPModel, {
+  foreignKey: 'fkResponseCtdopId',
+  targetKey: 'ctdopId',
+  as: 'ResponseCTDOP'
+});
+
+// ProtocolModel
+ProtocolModel.hasMany(AppealModel, {
+  foreignKey: 'fkProtocolId',
+  sourceKey: 'protocolId',
+  as: 'Appeals'
+});
+
 // CTDOPModel
 CTDOPModel.hasMany(PenaltyDocModel, {
   foreignKey: 'fkCtdopId',
   sourceKey: 'ctdopId',
   as: 'PenaltyDoc'
+});
+
+CTDOPModel.hasMany(AppealModel, {
+  foreignKey: 'fkResponseCtdopId',
+  sourceKey: 'ctdopId',
+  as: 'ResponseAppeals'
 });
 
 // FineCodeModel
@@ -72,11 +98,11 @@ PenaltyDocModel.belongsTo(CTDOPModel, {
 });
 
 
-// PenaltyInfoModel
-PenaltyInfoModel.hasOne(PenaltyDocModel, {
+// PenaltyInfoModel: um fato tem notificação e, depois, o auto (no máximo um de cada tipo)
+PenaltyInfoModel.hasMany(PenaltyDocModel, {
   foreignKey: 'fkPenaltyInfoId',
   sourceKey: 'penaltyInfoId',
-  as: 'PenaltyDoc'
+  as: 'PenaltyDocs'
 });
 
 PenaltyInfoModel.belongsTo(AgentModel, {
