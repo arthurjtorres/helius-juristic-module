@@ -1,6 +1,7 @@
 import PenaltyCompositeView from "../database/DTO/PenaltyCompositeView";
 import { PenaltyInfoModel, PenaltyDocModel, AppealModel, CTDOPModel, AgentModel, FineCodeModel, MotiveModel, ProtocolModel } from "../database/models";
 import Response, { StandardResponse } from "../utils/Response";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 
 import {
   getCompaniesByIds,
@@ -25,17 +26,23 @@ export const docRegistration = (corporationAcronym: string | undefined, docNumbe
 
 export class PenaltyViewService {
 
-  async getCompositeTableData(): Promise<StandardResponse<PenaltyCompositeView[]>> {
+  /**
+   * Visão composta da tabela de penalidades (uma linha por documento).
+   * @param query `includeInactive` (T17): com a flag autorizada, traz também documentos e penalidades
+   * inativos, com os cadastros auxiliares mesmo se inativos. O recurso continua só ativo.
+   */
+  async getCompositeTableData(query: ListQuery = {}): Promise<StandardResponse<PenaltyCompositeView[]>> {
+    const active = activeWhere(query);
 
     const rawDocs = await PenaltyDocModel.findAll({
-      where: { activated: true },
+      where: active,
       include: [
-        { model: PenaltyInfoModel, as: 'PenaltyInfo', where: { activated: true }, required: true, include: [
-          { model: AgentModel, as: 'Agent', where: { activated: true }, required: false },
-          { model: FineCodeModel, as: 'FineCode', where: { activated: true }, required: false },
-          { model: MotiveModel, as: 'Motive', where: { activated: true }, required: false }
+        { model: PenaltyInfoModel, as: 'PenaltyInfo', where: active, required: true, include: [
+          { model: AgentModel, as: 'Agent', where: active, required: false },
+          { model: FineCodeModel, as: 'FineCode', where: active, required: false },
+          { model: MotiveModel, as: 'Motive', where: active, required: false }
         ]},
-        { model: CTDOPModel, as: 'CTDOP', where: { activated: true }, required: false },
+        { model: CTDOPModel, as: 'CTDOP', where: active, required: false },
         { model: AppealModel, as: 'Appeal', where: { activated: true }, required: false, include: [ // LEFT JOIN
           { model: ProtocolModel, as: 'Protocol', required: false }
         ]}
@@ -82,6 +89,9 @@ export class PenaltyViewService {
         docType: doc.penaltyDocType,
         docNumber: doc.penaltyDocNumber,
         docStatus: doc.penaltyDocStatus,
+        activated: doc.activated,
+        penaltyInfoId: info?.penaltyInfoId,
+        penaltyActivated: info?.activated,
 
         // Dados do PenaltyInfo (Evento) + Dados Externos Resolvidos
         fkCompanyId: info?.fkCompanyId,

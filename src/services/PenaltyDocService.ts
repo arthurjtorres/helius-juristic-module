@@ -1,4 +1,5 @@
 import { AppealModel, CTDOPModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import PenaltyDocInterface from "../database/interfaces/PenaltyDocInterface";
 import { PenaltyStatusEnum } from "../database/models/enums/PenaltyStatusEnum";
 import Response from "../utils/Response";
@@ -134,8 +135,8 @@ class PenaltyDocService {
     return Response.ok("Documento de penalidade encontrado!", result);
   }
 
-  async findPenaltyDocs(query: Record<string, any>) {
-    const where: any = { activated: true };
+  async findPenaltyDocs(query: Record<string, any> & ListQuery) {
+    const where: any = { ...activeWhere(query) };
     const filterKeys = ['penaltyDocType', 'penaltyDocNumber', 'penaltyDocStatus', 'fkCtdopId', 'fkPenaltyInfoId', 'fkCorporationId'];
     for (const key of filterKeys) {
       if (typeof query[key] === "string" && query[key]) where[key] = query[key];

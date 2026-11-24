@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
 import FineCodeService from "../services/FineCodeService";
@@ -79,7 +80,7 @@ class FineCodeController {
 
   async findFineCode(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.findFineCode(req.query);
+      const result = await this.service.findFineCode(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error) {
       logError("Erro em find FineCode", error);

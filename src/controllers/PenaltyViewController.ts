@@ -2,15 +2,14 @@ import { Request, Response as ExpressResponse, NextFunction } from "express";
 import { PenaltyViewService } from "../services/PenaltyViewService";
 import Response from "../utils/Response";
 import { logError } from "../utils/logError";
+import { listQuery } from "../utils/ActiveFilter";
 
 class PenaltyViewController {
   private service = new PenaltyViewService();
 
   async getCompositeData(req: Request, res: ExpressResponse, next: NextFunction) {
     try {
-      
-      const result = await this.service.getCompositeTableData();
-      
+      const result = await this.service.getCompositeTableData(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error: unknown) {
       logError("getCompositeData", error);

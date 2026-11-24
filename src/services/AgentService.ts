@@ -1,4 +1,5 @@
 import { ModelStatic, Op } from "sequelize";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import AgentModel from "../database/models/AgentModel";
 import AgentInterface from "../database/interfaces/AgentInterface";
 import Response from "../utils/Response";
@@ -102,8 +103,8 @@ class AgentService {
     return Response.ok("Agente encontrado!", result);
   }
 
-  async findAgent(query: Partial<AgentInterface>) {
-    const where: any = { activated: true };
+  async findAgent(query: Partial<AgentInterface> & ListQuery) {
+    const where: any = { ...activeWhere(query) };
 
     if (query.agentCode) {
       where.agentCode = { [Op.iLike]: `%${query.agentCode}%` };

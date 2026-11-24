@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
 import CTDOPService from "../services/CTDOPService";
@@ -79,7 +80,7 @@ class CTDOPController {
 
   async findCTDOPs(req: Request, res: Response) {
     try {
-      const result = await this.service.findCTDOPs(req.query);
+      const result = await this.service.findCTDOPs(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error) {
       logError("Erro em findCTDOPs", error);
