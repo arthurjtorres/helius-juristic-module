@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
 import ProtocolService from "../services/ProtocolService";
@@ -79,7 +80,7 @@ class ProtocolController {
 
   async findProtocols(req: Request, res: Response) {
     try {
-      const result = await this.service.findProtocols(req.query);
+      const result = await this.service.findProtocols(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error) {
       logError("Erro em findProtocols", error);

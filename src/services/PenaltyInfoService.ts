@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import db from "../database/models/database";
 import { AnalysisModel, AppealModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
 import PenaltyInfoInterface from "../database/interfaces/PenaltyInfoInterface";
@@ -174,8 +175,8 @@ class PenaltyInfoService {
    * Busca penalidades por filtros locais (igualdade), sem consultar outros módulos.
    * `penaltyDocStatus` filtra pelos documentos e traz só os fatos com documento nesse status.
    */
-  async findPenalties(query: Record<string, any>) {
-    const where: Record<string, string | boolean> = { activated: true };
+  async findPenalties(query: Record<string, any> & ListQuery) {
+    const where: Record<string, unknown> = { ...activeWhere(query) };
 
     const filterKeys = [
       'fkCompanyId', 'fkCorporationId', 'fkVehicleId', 'fkBusTimetableId', 'fkLocationId',

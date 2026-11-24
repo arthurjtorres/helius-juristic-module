@@ -1,4 +1,5 @@
 import { Op, ModelStatic } from "sequelize";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import CTDOPModel from "../database/models/CTDOPModel";
 import CTDOPInterface from "../database/interfaces/CTDOPInterface";
 import Response from "../utils/Response";
@@ -142,8 +143,8 @@ class CTDOPService {
     return Response.ok("CTDOP encontrado!", result);
   }
 
-  async findCTDOPs(query: Record<string, any>) {
-    const where: any = { activated: true };
+  async findCTDOPs(query: Record<string, any> & ListQuery) {
+    const where: any = { ...activeWhere(query) };
 
     if (query.ctdopNumber) {
       where.ctdopNumber = { [Op.iLike]: `%${query.ctdopNumber}%` };

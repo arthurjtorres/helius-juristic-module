@@ -1,4 +1,5 @@
 import { ModelStatic, Op } from "sequelize";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import FineCodeModel from "../database/models/FineCodeModel";
 import FineCodeInterface from "../database/interfaces/FineCodeInterface";
 import Response from "../utils/Response";
@@ -108,8 +109,8 @@ class FineCodeService {
     return Response.ok("Código de infração encontrado!", result);
   }
 
-  async findFineCode(query: Partial<FineCodeInterface>) {
-    const where: any = { activated: true };
+  async findFineCode(query: Partial<FineCodeInterface> & ListQuery) {
+    const where: any = { ...activeWhere(query) };
 
     if (query.fineDescription)
       where.fineDescription = { [Op.iLike]: `%${query.fineDescription}%` };

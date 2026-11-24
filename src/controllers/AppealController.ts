@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
 import AppealService from "../services/AppealService";
@@ -79,7 +80,7 @@ class AppealController {
 
   async findAppeals(req: Request, res: Response) {
     try {
-      const result = await this.service.findAppeals(req.query);
+      const result = await this.service.findAppeals(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error) {
       logError("Erro em findAppeals", error);

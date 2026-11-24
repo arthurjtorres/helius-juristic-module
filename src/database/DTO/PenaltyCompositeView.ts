@@ -6,6 +6,9 @@ export default interface PenaltyCompositeView {
   docType?: string;
   docNumber?: string;       // número do documento, sem o consórcio
   docStatus?: string;       // status do documento (o mesmo valor de penaltyStatus)
+  activated: boolean;       // documento ativo (T17; reativar por PATCH /penalty-doc/:id/reactivate)
+  penaltyInfoId?: string;   // penalidade do documento (pai: reativar antes do documento)
+  penaltyActivated?: boolean;
 
   // Dados do PenaltyInfo (O Evento)
   fkCompanyId?: string;     // fkCompanyId
