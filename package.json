@@ -1,6 +1,6 @@
 {
   "name": "juristic-module",
-  "version": "0.16.1-beta",
+  "version": "0.16.2-beta",
   "description": "Módulo de controle do jurídico",
   "main": "src/server.ts",
   "repository": "https://github.com/NamelessMiojo/helius-juristic-module.git",
