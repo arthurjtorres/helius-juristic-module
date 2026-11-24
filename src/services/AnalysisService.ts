@@ -1,4 +1,5 @@
 import { ModelStatic } from "sequelize";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import AnalysisModel from "../database/models/AnalysisModel";
 import AnalysisInterface from "../database/interfaces/AnalysisInterface";
 import Response from "../utils/Response";
@@ -78,8 +79,8 @@ class AnalysisService {
     return Response.ok("Análise encontrada!", result);
   }
 
-  async findAnalyses(query: { fkPenaltyInfoId?: string; fkEmployeeId?: string }) {
-    const where: any = { activated: true };
+  async findAnalyses(query: { fkPenaltyInfoId?: string; fkEmployeeId?: string } & ListQuery) {
+    const where: any = { ...activeWhere(query) };
     if (query.fkPenaltyInfoId) where.fkPenaltyInfoId = query.fkPenaltyInfoId;
     if (query.fkEmployeeId) where.fkEmployeeId = query.fkEmployeeId;
 

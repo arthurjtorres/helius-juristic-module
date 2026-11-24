@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
 import AnalysisService from "../services/AnalysisService";
@@ -79,7 +80,7 @@ class AnalysisController {
 
   async findAnalyses(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await this.service.findAnalyses(req.query);
+      const result = await this.service.findAnalyses(listQuery(req, res));
       return res.status(result.status).json(result);
     } catch (error) {
       logError("Erro em findAnalyses", error);
