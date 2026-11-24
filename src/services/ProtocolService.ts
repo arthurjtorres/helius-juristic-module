@@ -1,4 +1,5 @@
 import { Op } from "sequelize";
+import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import { AppealModel, ProtocolModel } from "../database/models";
 import ProtocolInterface from "../database/interfaces/ProtocolInterface";
 import Response from "../utils/Response";
@@ -105,8 +106,8 @@ class ProtocolService {
     return Response.ok("Protocolo encontrado!", result);
   }
 
-  async findProtocols(query: Record<string, any>) {
-    const where: any = { activated: true };
+  async findProtocols(query: Record<string, any> & ListQuery) {
+    const where: any = { ...activeWhere(query) };
     if (typeof query.protocolNumber === "string" && query.protocolNumber) {
       where.protocolNumber = { [Op.iLike]: `%${query.protocolNumber}%` };
     }
