@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import MotiveService from "../services/MotiveService";
 class MotiveController {
   private service = new MotiveService();
 
-  async createMotive(req: Request, res: Response, next: NextFunction) {
+  async createMotive(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class MotiveController {
     }
   }
 
-  async updateMotive(req: Request, res: Response, next: NextFunction) {
+  async updateMotive(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class MotiveController {
     }
   }
 
-  async deleteMotive(req: Request, res: Response, next: NextFunction) {
+  async deleteMotive(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deleteMotive(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class MotiveController {
     }
   }
 
-  async getMotive(req: Request, res: Response, next: NextFunction) {
+  async getMotive(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getMotive(id);
@@ -78,7 +78,7 @@ class MotiveController {
     }
   }
 
-  async findMotives(req: Request, res: Response, next: NextFunction) {
+  async findMotives(req: Request, res: Response) {
     try {
       const result = await this.service.findMotives(listQuery(req, res));
       return res.status(result.status).json(result);

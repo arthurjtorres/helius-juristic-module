@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import AnalysisService from "../services/AnalysisService";
 class AnalysisController {
   private service = new AnalysisService();
 
-  async createAnalysis(req: Request, res: Response, next: NextFunction) {
+  async createAnalysis(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class AnalysisController {
     }
   }
 
-  async updateAnalysis(req: Request, res: Response, next: NextFunction) {
+  async updateAnalysis(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class AnalysisController {
     }
   }
 
-  async deleteAnalysis(req: Request, res: Response, next: NextFunction) {
+  async deleteAnalysis(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deleteAnalysis(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class AnalysisController {
     }
   }
 
-  async getAnalysis(req: Request, res: Response, next: NextFunction) {
+  async getAnalysis(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getAnalysis(id);
@@ -78,7 +78,7 @@ class AnalysisController {
     }
   }
 
-  async findAnalyses(req: Request, res: Response, next: NextFunction) {
+  async findAnalyses(req: Request, res: Response) {
     try {
       const result = await this.service.findAnalyses(listQuery(req, res));
       return res.status(result.status).json(result);

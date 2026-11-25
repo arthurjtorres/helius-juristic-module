@@ -38,6 +38,7 @@ describe('PenaltyInfoService.createPenalty (T12)', () => {
   const service = new PenaltyInfoService();
 
   it('400 sem o documento', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- descarta o doc do payload
     const { doc, ...semDoc } = payload();
     expect((await service.createPenalty(semDoc)).status).toBe(400);
   });
