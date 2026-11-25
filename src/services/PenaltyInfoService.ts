@@ -175,7 +175,7 @@ class PenaltyInfoService {
    * Busca penalidades por filtros locais (igualdade), sem consultar outros módulos.
    * `penaltyDocStatus` filtra pelos documentos e traz só os fatos com documento nesse status.
    */
-  async findPenalties(query: Record<string, any> & ListQuery) {
+  async findPenalties(query: Record<string, unknown> & ListQuery) {
     const where: Record<string, unknown> = { ...activeWhere(query) };
 
     const filterKeys = [

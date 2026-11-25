@@ -2,6 +2,13 @@ import { axiosOperations, axiosRegistry } from "./axiosInstance";
 import { operationsRoutes, registryRoutes } from "./endpoints";
 import { logError } from "../../utils/logError";
 
+/** Resposta das rotas `lookup` (só os campos que o juristic lê). */
+type Lookup<T> = { data?: T[] };
+type ExtCompany = { companyId: string; companyName: string; fkCorporationId?: string | null; Corporation?: { corporationAcronym: string } | null };
+type ExtVehicle = { vehicleId: string; vehicleNumber: string };
+type ExtBusTimetable = { busTimetableId: string; timetableCode: string };
+type ExtLocation = { locationId: string; locationName: string };
+
 export const getCompanyById = async (id: string) => {
   try {
     const response = await axiosRegistry.get(registryRoutes.getCompanyById(id));
@@ -15,7 +22,7 @@ export const getCompanyById = async (id: string) => {
 export const getCompaniesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosRegistry.post(registryRoutes.getCompaniesLookup, { ids });
+    const response = await axiosRegistry.post<Lookup<ExtCompany>>(registryRoutes.getCompaniesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     logError("getCompaniesByIds", error);
@@ -36,7 +43,7 @@ export const getVehicleById = async (id: string ) => {
 export const getVehiclesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getVehiclesLookup, { ids });
+    const response = await axiosOperations.post<Lookup<ExtVehicle>>(operationsRoutes.getVehiclesLookup, { ids });
     return response.data?.data || []; 
   } catch (error: unknown) {
     logError("getVehiclesByIds", error);
@@ -57,7 +64,7 @@ export const getBusTimetableById = async (id: string ) => {
 export const getBusTimetablesByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getBusTimetablesLookup, { ids });
+    const response = await axiosOperations.post<Lookup<ExtBusTimetable>>(operationsRoutes.getBusTimetablesLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     logError("getBusTimetablesByIds", error);
@@ -78,7 +85,7 @@ export const getLocationById = async (id: string ) => {
 export const getLocationsByIds = async (ids: string[]) => {
   if (!ids.length) return [];
   try {
-    const response = await axiosOperations.post(operationsRoutes.getLocationsLookup, { ids });
+    const response = await axiosOperations.post<Lookup<ExtLocation>>(operationsRoutes.getLocationsLookup, { ids });
     return response.data?.data || [];
   } catch (error) {
     logError("getLocationsByIds", error);
@@ -94,7 +101,7 @@ export const getLocationsByIds = async (ids: string[]) => {
  * @returns `fkCorporationId` da empresa, ou `null` se ela não existe ou está inativa.
  */
 export const getCompanyCorporationId = async (companyId: string): Promise<string | null> => {
-  const response = await axiosRegistry.post(registryRoutes.getCompaniesLookup, { ids: [companyId] });
-  const company = (response.data?.data || []).find((c: any) => c.companyId === companyId);
+  const response = await axiosRegistry.post<Lookup<ExtCompany>>(registryRoutes.getCompaniesLookup, { ids: [companyId] });
+  const company = (response.data?.data || []).find((c) => c.companyId === companyId);
   return company?.fkCorporationId ?? null;
 };

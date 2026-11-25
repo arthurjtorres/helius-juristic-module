@@ -1,4 +1,4 @@
-import { ModelStatic, Op } from "sequelize";
+import { ModelStatic, Op, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import MotiveModel from "../database/models/MotiveModel";
 import MotiveInterface from "../database/interfaces/MotiveInterface";
@@ -87,7 +87,7 @@ class MotiveService {
   }
 
   async findMotives(query: Partial<MotiveInterface> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+    const where: WhereAttributeHash = { ...activeWhere(query) };
 
     if (query.motiveName) {
       where.motiveName = { [Op.iLike]: `%${query.motiveName}%` };

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import FineCodeService from "../services/FineCodeService";
 class FineCodeController {
   private service = new FineCodeService();
 
-  async createFineCode(req: Request, res: Response, next: NextFunction) {
+  async createFineCode(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class FineCodeController {
     }
   }
 
-  async updateFineCode(req: Request, res: Response, next: NextFunction) {
+  async updateFineCode(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class FineCodeController {
     }
   }
 
-  async deleteFineCode(req: Request, res: Response, next: NextFunction) {
+  async deleteFineCode(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deleteFineCode(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class FineCodeController {
     }
   }
 
-  async getFineCode(req: Request, res: Response, next: NextFunction) {
+  async getFineCode(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getFineCode(id);
@@ -78,7 +78,7 @@ class FineCodeController {
     }
   }
 
-  async findFineCode(req: Request, res: Response, next: NextFunction) {
+  async findFineCode(req: Request, res: Response) {
     try {
       const result = await this.service.findFineCode(listQuery(req, res));
       return res.status(result.status).json(result);

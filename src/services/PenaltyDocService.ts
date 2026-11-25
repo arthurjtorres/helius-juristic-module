@@ -1,3 +1,4 @@
+import { WhereAttributeHash } from "sequelize";
 import { AppealModel, CTDOPModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import PenaltyDocInterface from "../database/interfaces/PenaltyDocInterface";
@@ -135,8 +136,8 @@ class PenaltyDocService {
     return Response.ok("Documento de penalidade encontrado!", result);
   }
 
-  async findPenaltyDocs(query: Record<string, any> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+  async findPenaltyDocs(query: Record<string, unknown> & ListQuery) {
+    const where: WhereAttributeHash = { ...activeWhere(query) };
     const filterKeys = ['penaltyDocType', 'penaltyDocNumber', 'penaltyDocStatus', 'fkCtdopId', 'fkPenaltyInfoId', 'fkCorporationId'];
     for (const key of filterKeys) {
       if (typeof query[key] === "string" && query[key]) where[key] = query[key];
