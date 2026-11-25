@@ -1,4 +1,4 @@
-import { Op, Transaction } from "sequelize";
+import { Op, Transaction, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import db from "../database/models/database";
 import { AppealModel, CTDOPModel, PenaltyDocModel, ProtocolModel } from "../database/models";
@@ -175,8 +175,8 @@ class AppealService {
     return Response.ok("Recurso encontrado!", result);
   }
 
-  async findAppeals(query: Record<string, any> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+  async findAppeals(query: Record<string, unknown> & ListQuery) {
+    const where: WhereAttributeHash = { ...activeWhere(query) };
     for (const key of ['fkProtocolId', 'fkPenaltyDocId', 'fkResponseCtdopId', 'response']) {
       if (typeof query[key] === "string" && query[key]) where[key] = query[key];
     }

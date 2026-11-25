@@ -72,10 +72,10 @@ export class PenaltyViewService {
       const appeal = doc.Appeal;
 
       // Encontrar os dados externos correspondentes aos IDs deste registo
-      const extCompany = companies.find((c: any) => c.companyId === info?.fkCompanyId);
-      const extVehicle = vehicles.find((v: any) => v.vehicleId === info?.fkVehicleId);
-      const extTimetable = timetables.find((t: any) => t.busTimetableId === info?.fkBusTimetableId);
-      const extLocation = locations.find((l: any) => l.locationId === info?.fkLocationId);
+      const extCompany = companies.find((c) => c.companyId === info?.fkCompanyId);
+      const extVehicle = vehicles.find((v) => v.vehicleId === info?.fkVehicleId);
+      const extTimetable = timetables.find((t) => t.busTimetableId === info?.fkBusTimetableId);
+      const extLocation = locations.find((l) => l.locationId === info?.fkLocationId);
 
       // Concatenar Data e Hora de forma segura
       const penaltyDate = info && info.date && info.time 
