@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import PenaltyInfoService from "../services/PenaltyInfoService";
 class PenaltyController {
   private service = new PenaltyInfoService();
 
-  async createPenalty(req: Request, res: Response, next: NextFunction) {
+  async createPenalty(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class PenaltyController {
     }
   }
 
-  async updatePenalty(req: Request, res: Response, next: NextFunction) {
+  async updatePenalty(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class PenaltyController {
     }
   }
 
-  async deletePenalty(req: Request, res: Response, next: NextFunction) {
+  async deletePenalty(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deletePenalty(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class PenaltyController {
     }
   }
 
-  async getPenalty(req: Request, res: Response, next: NextFunction) {
+  async getPenalty(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getPenalty(id);
@@ -78,7 +78,7 @@ class PenaltyController {
     }
   }
 
-  async findPenalties(req: Request, res: Response, next: NextFunction) {
+  async findPenalties(req: Request, res: Response) {
     try {
       const result = await this.service.findPenalties(listQuery(req, res));
       return res.status(result.status).json(result);

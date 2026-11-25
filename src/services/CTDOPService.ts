@@ -1,4 +1,4 @@
-import { Op, ModelStatic } from "sequelize";
+import { Op, ModelStatic, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import CTDOPModel from "../database/models/CTDOPModel";
 import CTDOPInterface from "../database/interfaces/CTDOPInterface";
@@ -32,7 +32,7 @@ class CTDOPService {
     const value = data.ctdopNumber;
     if (!value) return null;
 
-    const where: any = { ctdopNumber: value };
+    const where: WhereAttributeHash = { ctdopNumber: value };
     if (excludeId) where.ctdopId = { [Op.ne]: excludeId };
 
     const existing = await this.model.findOne({ where });
@@ -143,8 +143,8 @@ class CTDOPService {
     return Response.ok("CTDOP encontrado!", result);
   }
 
-  async findCTDOPs(query: Record<string, any> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+  async findCTDOPs(query: Record<string, unknown> & ListQuery) {
+    const where: WhereAttributeHash = { ...activeWhere(query) };
 
     if (query.ctdopNumber) {
       where.ctdopNumber = { [Op.iLike]: `%${query.ctdopNumber}%` };

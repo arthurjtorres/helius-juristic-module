@@ -1,4 +1,4 @@
-import { ModelStatic, Op } from "sequelize";
+import { ModelStatic, Op, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import AgentModel from "../database/models/AgentModel";
 import AgentInterface from "../database/interfaces/AgentInterface";
@@ -14,7 +14,7 @@ class AgentService {
   /** Cada agente tem um único código. */
   private async findUniqueConflict(agentCode?: string, excludeId?: string) {
     if (!agentCode) return null;
-    const where: any = { agentCode };
+    const where: WhereAttributeHash = { agentCode };
     if (excludeId) where.agentId = { [Op.ne]: excludeId };
     const existing = await this.model.findOne({ where });
     return existing ? uniqueConflict("Código do agente", existing, existing.agentId, 'agent') : null;
@@ -104,7 +104,7 @@ class AgentService {
   }
 
   async findAgent(query: Partial<AgentInterface> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+    const where: WhereAttributeHash = { ...activeWhere(query) };
 
     if (query.agentCode) {
       where.agentCode = { [Op.iLike]: `%${query.agentCode}%` };

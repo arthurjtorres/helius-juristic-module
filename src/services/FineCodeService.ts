@@ -1,4 +1,4 @@
-import { ModelStatic, Op } from "sequelize";
+import { ModelStatic, Op, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import FineCodeModel from "../database/models/FineCodeModel";
 import FineCodeInterface from "../database/interfaces/FineCodeInterface";
@@ -14,7 +14,7 @@ class FineCodeService {
   /** `fineNumber` é único; sem ele, o banco usa o próximo da sequência. */
   private async findUniqueConflict(fineNumber?: string, excludeId?: string) {
     if (!fineNumber) return null;
-    const where: any = { fineNumber };
+    const where: WhereAttributeHash = { fineNumber };
     if (excludeId) where.fineCodeId = { [Op.ne]: excludeId };
     const existing = await this.model.findOne({ where });
     return existing ? uniqueConflict("Número do código de infração", existing, existing.fineCodeId, 'fine-code') : null;
@@ -110,7 +110,7 @@ class FineCodeService {
   }
 
   async findFineCode(query: Partial<FineCodeInterface> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+    const where: WhereAttributeHash = { ...activeWhere(query) };
 
     if (query.fineDescription)
       where.fineDescription = { [Op.iLike]: `%${query.fineDescription}%` };

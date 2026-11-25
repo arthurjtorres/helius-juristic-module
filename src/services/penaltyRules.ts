@@ -1,4 +1,4 @@
-import { Op, Transaction } from "sequelize";
+import { Op, Transaction, WhereAttributeHash } from "sequelize";
 import { AgentModel, CTDOPModel, FineCodeModel, MotiveModel, PenaltyDocModel } from "../database/models";
 import { DocTypeEnum } from "../database/models/enums/DocTypeEnum";
 import Response from "../utils/Response";
@@ -26,7 +26,7 @@ export const checkCtdopForDoc = async (fkCtdopId: string, docType: DocTypeEnum, 
 export const checkDocNumber = async (
   fkCorporationId: string, docType: DocTypeEnum, number: string, excludeId?: string,
 ) => {
-  const where: any = { fkCorporationId, penaltyDocType: docType, penaltyDocNumber: number };
+  const where: WhereAttributeHash = { fkCorporationId, penaltyDocType: docType, penaltyDocNumber: number };
   if (excludeId) where.penaltyDocId = { [Op.ne]: excludeId };
   const existing = await PenaltyDocModel.findOne({ where });
   if (!existing) return null;

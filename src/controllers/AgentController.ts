@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import AgentService from "../services/AgentService";
 class AgentController {
   private service = new AgentService();
 
-  async createAgent(req: Request, res: Response, next: NextFunction) {
+  async createAgent(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class AgentController {
     }
   }
 
-  async updateAgent(req: Request, res: Response, next: NextFunction) {
+  async updateAgent(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class AgentController {
     }
   }
 
-  async deleteAgent(req: Request, res: Response, next: NextFunction) {
+  async deleteAgent(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deleteAgent(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class AgentController {
     }
   }
 
-  async getAgent(req: Request, res: Response, next: NextFunction) {
+  async getAgent(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getAgent(id);
@@ -78,7 +78,7 @@ class AgentController {
     }
   }
 
-  async findAgent(req: Request, res: Response, next: NextFunction) {
+  async findAgent(req: Request, res: Response) {
     try {
       const result = await this.service.findAgent(listQuery(req, res));
       return res.status(result.status).json(result);

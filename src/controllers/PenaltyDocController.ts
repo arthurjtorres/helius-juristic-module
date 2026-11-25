@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { listQuery } from "../utils/ActiveFilter";
 import { logError } from "../utils/logError";
 import Resp from "../utils/Response";
@@ -7,7 +7,7 @@ import PenaltyDocService from "../services/PenaltyDocService";
 class PenaltyDocController {
   private service = new PenaltyDocService();
 
-  async createPenaltyDoc(req: Request, res: Response, next: NextFunction) {
+  async createPenaltyDoc(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -24,7 +24,7 @@ class PenaltyDocController {
     }
   }
 
-  async updatePenaltyDoc(req: Request, res: Response, next: NextFunction) {
+  async updatePenaltyDoc(req: Request, res: Response) {
     try {
       const user = res.locals.user;
       const data = {
@@ -42,7 +42,7 @@ class PenaltyDocController {
     }
   }
 
-  async deletePenaltyDoc(req: Request, res: Response, next: NextFunction) {
+  async deletePenaltyDoc(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.deletePenaltyDoc(id, res.locals.user.userId);
@@ -66,7 +66,7 @@ class PenaltyDocController {
     }
   }
 
-  async getPenaltyDoc(req: Request, res: Response, next: NextFunction) {
+  async getPenaltyDoc(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const result = await this.service.getPenaltyDoc(id);
@@ -78,7 +78,7 @@ class PenaltyDocController {
     }
   }
 
-  async findPenaltyDocs(req: Request, res: Response, next: NextFunction) {
+  async findPenaltyDocs(req: Request, res: Response) {
     try {
       const result = await this.service.findPenaltyDocs(listQuery(req, res));
       return res.status(result.status).json(result);

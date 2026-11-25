@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, WhereAttributeHash } from "sequelize";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import { AppealModel, ProtocolModel } from "../database/models";
 import ProtocolInterface from "../database/interfaces/ProtocolInterface";
@@ -13,7 +13,7 @@ class ProtocolService {
 
   private async findUniqueConflict(protocolNumber?: string, excludeId?: string) {
     if (!protocolNumber) return null;
-    const where: any = { protocolNumber };
+    const where: WhereAttributeHash = { protocolNumber };
     if (excludeId) where.protocolId = { [Op.ne]: excludeId };
     const existing = await this.model.findOne({ where });
     return existing ? uniqueConflict("Número de protocolo", existing, existing.protocolId, 'protocol') : null;
@@ -106,8 +106,8 @@ class ProtocolService {
     return Response.ok("Protocolo encontrado!", result);
   }
 
-  async findProtocols(query: Record<string, any> & ListQuery) {
-    const where: any = { ...activeWhere(query) };
+  async findProtocols(query: Record<string, unknown> & ListQuery) {
+    const where: WhereAttributeHash = { ...activeWhere(query) };
     if (typeof query.protocolNumber === "string" && query.protocolNumber) {
       where.protocolNumber = { [Op.iLike]: `%${query.protocolNumber}%` };
     }
