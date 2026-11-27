@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { ListQuery, activeWhere } from "../utils/ActiveFilter";
 import db from "../database/models/database";
 import { AnalysisModel, AppealModel, PenaltyDocModel, PenaltyInfoModel, ProtocolModel } from "../database/models";
@@ -53,8 +53,8 @@ class PenaltyInfoService {
       ?? await checkDocNumber(fkCorporationId, doc.penaltyDocType, doc.penaltyDocNumber);
     if (invalid) return invalid;
 
-    const penaltyInfoId = uuidv4();
-    const penaltyDocId = uuidv4();
+    const penaltyInfoId = randomUUID();
+    const penaltyDocId = randomUUID();
     const audit = { createdBy: info.createdBy, createdAt: info.createdAt };
 
     const transaction = await db.transaction();
